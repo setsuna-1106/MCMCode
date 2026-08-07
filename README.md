@@ -1,11 +1,177 @@
-## 项目介绍
-数模竞赛中的建模的代码仓库，建立最小化骨架以便比赛时复用
+# MCMCode
+
+这是本人的在准备数学建模竞赛中积累的常用算法与数据处理代码仓库。
+以“最小化、可运行、便于改写”为目标，适合比赛时快速复制模板，再根据题目数据补充清洗、建模和可视化部分。
+
+## 快速开始
+
+### 1. 准备环境
+
+项目使用 Python 3.10+，依赖记录在 `requirements.txt` 中。
+
+可以创建新的虚拟环境：
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+### 2. 运行示例
+
+所有 Python 模板都可以从项目根目录直接运行：
+
+```bash
+.venv/bin/python py/knn.py
+.venv/bin/python py/svm.py
+...
+```
+
+其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
+
+```bash
+.venv/bin/python py/data_clean.py
+```
 
 ## 项目结构
-'''
+
+```text
 MCMCode/
-├── cpp/ #cpp代码入口，包含一些高性能算法
-│ 
-├── py/ #py代码入口
+├── cpp/                  # C++ 代码目录，自行编写的高性能代码入口
+├── py/                   # Python 算法与数据处理模板
+├── requirements.txt      # Python 依赖
 └── README.md
-'''
+```
+
+## Python 模块
+
+| 文件 | 类型 | 主要用途 |
+| --- | --- | --- |
+| `py/data_clean.py` | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
+| `py/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
+| `py/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
+| `py/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
+| `py/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
+| `py/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
+| `py/knn.py` | 分类 | 标准化 + KNN 分类 |
+| `py/svm.py` | 分类 | 标准化 + SVM 分类 |
+| `py/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
+| `py/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
+| `py/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
+| `py/dbscan.py` | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
+
+## 常用接口
+
+展示常用接口使用示例
+
+### 数据清洗
+
+```python
+import pandas as pd
+from py.data_clean import handle_missing
+
+df = pd.read_csv("附件.csv")
+df = handle_missing(df)
+```
+
+`handle_missing` 只处理数值列；文本列、分类列和日期列需要根据题意单独处理。
+
+### 熵权法
+
+```python
+import numpy as np
+from py.entropy_weight import entropy_weight
+
+X = np.array([
+    [10, 100],
+    [20, 80],
+    [30, 120],
+])
+direction = [
+    -1,  # 成本型指标：越小越好
+    1,   # 收益型指标：越大越好
+]
+weights = entropy_weight(X, direction)
+print(weights)
+```
+
+约定：`X` 的每一行是一个方案或样本，每一列是一个指标；`direction` 长度应与指标数一致，`1` 表示收益型指标，`-1` 表示成本型指标。
+
+### TOPSIS
+
+```python
+import numpy as np
+from py.topsis import topsis
+
+w = np.array([0.4, 0.6])
+direction = np.array([1, -1])
+C, order, D_plus, D_minus = topsis(X, w, direction)
+print("贴近度:", C)
+print("从优到劣的行号:", order)
+```
+
+`C` 越大表示方案越接近正理想解；`order` 是按 `C` 从大到小排列后的行号。使用前应确认输入矩阵没有缺失值，且权重已归一化。
+
+### GM(1,1)
+
+```python
+from py.gm11 import gm11
+
+forecast, (a, b), fitted = gm11(
+    [12, 15, 19, 24, 30],
+    steps=3,
+)
+print("参数:", a, b)
+print("拟合值:", fitted)
+print("预测值:", forecast)
+```
+
+返回值依次为：未来 `steps` 个预测值、参数 `(a, b)`、原始样本对应的拟合值。GM(1,1) 适合样本量较小、趋势较明显的序列；正式建模时还应检查残差、后验差比和适用性。
+
+### 机器学习分类与聚类
+
+分类模板通常接收：
+
+- `X`：形状为 `(样本数, 特征数)` 的数值特征矩阵；
+- `y`：形状为 `(样本数,)` 的分类标签。
+
+以 SVM 为例：
+
+```python
+from py.svm import train_svm
+
+model, result = train_svm(X, y)
+print(result["accuracy"])
+predictions = model.predict(X_new)
+```
+
+`train_knn`、`train_svm`、`fit_logistic` 和 `train_random_forest` 都会划分训练集与测试集并返回模型和结果。KNN、SVM、Logistic 回归使用了 `StandardScaler`；标准化被放在 Pipeline 中，以避免测试集信息泄漏到训练过程。
+
+聚类模板 `train_kmeans` 和 `train_dbscan` 接收二维特征矩阵 `X`，返回模型和聚类结果。DBSCAN 的标签 `-1` 表示噪声点；KMeans 需要预先指定 `n_clusters`。
+
+## 推荐的建模流程
+
+```text
+读取数据
+  -> 缺失值与异常值处理
+  -> 选择指标、构造特征
+  -> 按题意进行标准化或指标正负向处理
+  -> 训练模型 / 评价排序 / 预测
+  -> 用交叉验证、残差或敏感性分析检验结果
+  -> 输出表格、图像和论文中的模型解释
+```
+
+使用时的相关注意事项：
+
+1. `X` 的行列含义必须在论文和代码中保持一致。
+2. 评价指标的收益型、成本型方向要先确认，再传入 `direction`。
+3. 标准化、缺失值填补和特征选择都应只使用训练数据拟合，避免数据泄漏。
+4. 算法输出不能替代题目分析；应结合假设、误差、稳定性和敏感性分析解释结论。
+
+## 依赖
+
+- Python 3.10+
+- NumPy 2.x
+- pandas 2.x
+- scikit-learn 1.5+
+
+具体版本范围见 [`requirements.txt`](requirements.txt)。
