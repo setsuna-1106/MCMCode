@@ -175,3 +175,7 @@ predictions = model.predict(X_new)
 - scikit-learn 1.5+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
+
+## 参考资料
+
+https://scikit-learn.org/stable/api/index.html
