@@ -23,7 +23,9 @@ python3 -m venv .venv
 ```bash
 .venv/bin/python py/knn.py
 .venv/bin/python py/svm.py
-...
+.venv/bin/python py/gm11.py
+.venv/bin/python py/exponential_smoothing.py
+.venv/bin/python py/regression/LinearRegression.py
 ```
 
 其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
@@ -38,6 +40,7 @@ python3 -m venv .venv
 MCMCode/
 ├── cpp/                  # C++ 代码目录，自行编写的高性能代码入口
 ├── py/                   # Python 算法与数据处理模板
+│   └── regression/        # 回归模型模板
 ├── requirements.txt      # Python 依赖
 └── README.md
 ```
@@ -50,6 +53,7 @@ MCMCode/
 | `py/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
 | `py/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | `py/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
+| `py/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
 | `py/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/knn.py` | 分类 | 标准化 + KNN 分类 |
@@ -58,6 +62,9 @@ MCMCode/
 | `py/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
 | `py/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
 | `py/dbscan.py` | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
+| `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
+| `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
+| `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
 
 ## 常用接口
 
@@ -127,6 +134,20 @@ print("预测值:", forecast)
 
 返回值依次为：未来 `steps` 个预测值、参数 `(a, b)`、原始样本对应的拟合值。GM(1,1) 适合样本量较小、趋势较明显的序列；正式建模时还应检查残差、后验差比和适用性。
 
+### 一次指数平滑
+
+```python
+import numpy as np
+from py.exponential_smoothing import exponential_smoothing
+
+y = np.array([102, 105, 107, 111, 115, 114, 119, 123], dtype=float)
+level, forecast = exponential_smoothing(y, alpha=0.3, steps=3)
+print("平滑值:", level)
+print("预测值:", forecast)
+```
+
+`y` 是按时间排列的一维序列，`alpha` 越大越重视最新观测值。返回的 `level` 是历史平滑值，`forecast` 是未来 `steps` 期预测；该方法不单独建模趋势和季节性。
+
 ### 机器学习分类与聚类
 
 分类模板通常接收：
@@ -145,6 +166,8 @@ predictions = model.predict(X_new)
 ```
 
 `train_knn`、`train_svm`、`fit_logistic` 和 `train_random_forest` 都会划分训练集与测试集并返回模型和结果。KNN、SVM、Logistic 回归使用了 `StandardScaler`；标准化被放在 Pipeline 中，以避免测试集信息泄漏到训练过程。
+
+回归模板位于 `py/regression/`，提供 `fit_linear_regression`、`fit_polynomial_regression` 和 `fit_ridge_regression`。它们都返回训练后的 `model`、测试集预测值和 `mae`、`mse`、`rmse`、`r2` 等指标；`standardize=True` 时，标准化在 Pipeline 中完成。
 
 聚类模板 `train_kmeans` 和 `train_dbscan` 接收二维特征矩阵 `X`，返回模型和聚类结果。DBSCAN 的标签 `-1` 表示噪声点；KMeans 需要预先指定 `n_clusters`。
 
