@@ -27,6 +27,7 @@ python3 -m venv .venv
 .venv/bin/python py/forecasting/ese.py
 .venv/bin/python py/forecasting/arima.py
 .venv/bin/python py/regression/LinearRegression.py
+.venv/bin/python py/regression/scipy_curve_fit.py
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
@@ -50,7 +51,7 @@ MCMCode/
 │   ├── classification/          # 分类模型
 │   ├── clustering/              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA
-│   ├── regression/              # 回归模型
+│   ├── regression/              # 回归模型和任意函数拟合
 │   └── statistics/              # 假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
@@ -83,6 +84,7 @@ MCMCode/
 | `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
 | `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
 | `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
+| `py/regression/scipy_curve_fit.py` | 回归 | scipy 任意函数拟合与参数评估 |
 
 ## 常用接口
 
@@ -203,6 +205,45 @@ predictions = model.predict(X_new)
 `train_knn`、`train_svm`、`fit_logistic` 和 `train_random_forest` 都会划分训练集与测试集并返回模型和结果。KNN、SVM、Logistic 回归使用了 `StandardScaler`；标准化被放在 Pipeline 中，以避免测试集信息泄漏到训练过程。
 
 回归模板位于 `py/regression/`，提供 `fit_linear_regression`、`fit_polynomial_regression` 和 `fit_ridge_regression`。它们都返回训练后的 `model`、测试集预测值和 `mae`、`mse`、`rmse`、`r2` 等指标；`standardize=True` 时，标准化在 Pipeline 中完成。
+
+### scipy 任意函数拟合
+
+```python
+import numpy as np
+from py.regression.scipy_curve_fit import (
+    fit_curve,
+    fit_curve_multi,
+    predict_curve,
+    predict_curve_multi,
+)
+
+def model_func(x, a, b, c):
+    return a * np.exp(-b * x) + c
+
+output = fit_curve(
+    model_func,
+    x,
+    y,
+    p0=(1, 1, 0),
+    bounds=([-np.inf, 0, -np.inf], [np.inf, np.inf, np.inf]),
+)
+print("参数:", output["params"])
+print("RMSE:", output["rmse"])
+future = predict_curve(model_func, x_new, output["params"])
+```
+
+多元函数使用 `fit_curve_multi`，`X` 按 `(样本数, 特征数)` 传入：
+
+```python
+def plane(X, a, b, c):
+    x1, x2 = X
+    return a * x1 + b * x2 + c
+
+output = fit_curve_multi(plane, X, y, p0=(1, 1, 0))
+future = predict_curve_multi(plane, X_new, output["params"])
+```
+
+一元函数必须写成 `model_func(x, *params)`；多元函数接收的 `X` 形状为 `(特征数, 样本数)`。`p0` 是参数初值，`bounds` 是参数上下界。两种入口都会先划分训练集和测试集，再用 `curve_fit` 拟合训练数据并评估测试数据。
 
 ### statsmodels 统计建模
 
