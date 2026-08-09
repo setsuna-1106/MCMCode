@@ -21,47 +21,62 @@ python3 -m venv .venv
 所有 Python 模板都可以从项目根目录直接运行：
 
 ```bash
-.venv/bin/python py/knn.py
-.venv/bin/python py/svm.py
-.venv/bin/python py/gm11.py
-.venv/bin/python py/exponential_smoothing.py
+.venv/bin/python py/classification/knn.py
+.venv/bin/python py/classification/svm.py
+.venv/bin/python py/forecasting/gm11.py
+.venv/bin/python py/forecasting/ese.py
 .venv/bin/python py/regression/LinearRegression.py
+.venv/bin/python py/regression/statsmodels_ols.py
+.venv/bin/python py/classification/statsmodels_logit.py
+.venv/bin/python py/statistics/statsmodels_tests.py
 ```
 
 其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
 
 ```bash
-.venv/bin/python py/data_clean.py
+.venv/bin/python py/preprocessing/data_clean.py
 ```
 
 ## 项目结构
 
 ```text
 MCMCode/
-├── cpp/                  # C++ 代码目录，自行编写的高性能代码入口
-├── py/                   # Python 算法与数据处理模板
-│   └── regression/        # 回归模型模板
-├── requirements.txt      # Python 依赖
+├── cpp/                         # C++ 代码目录
+├── py/                          # Python 模板包
+│   ├── preprocessing/           # 数据清洗
+│   ├── evaluation/              # 熵权、TOPSIS 和模型评估
+│   ├── forecasting/             # GM(1,1) 和指数平滑
+│   ├── classification/          # 分类模型
+│   ├── clustering/              # 聚类模型
+│   ├── dimensionality_reduction/ # PCA
+│   ├── regression/              # 回归模型
+│   └── statistics/              # 假设检验
+├── requirements.txt             # Python 依赖
 └── README.md
 ```
+
+目录名表示建模用途；模块接口保持独立，使用时直接替换示例中的 `X`、`y` 或数据表。
 
 ## Python 模块
 
 | 文件 | 类型 | 主要用途 |
 | --- | --- | --- |
-| `py/data_clean.py` | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
-| `py/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
-| `py/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
-| `py/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
-| `py/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
-| `py/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
-| `py/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
-| `py/knn.py` | 分类 | 标准化 + KNN 分类 |
-| `py/svm.py` | 分类 | 标准化 + SVM 分类 |
-| `py/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
-| `py/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
-| `py/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
-| `py/dbscan.py` | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
+| `py/preprocessing/data_clean.py` | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
+| `py/evaluation/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
+| `py/evaluation/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
+| `py/forecasting/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
+| `py/forecasting/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
+| `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
+| `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
+| `py/regression/statsmodels_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
+| `py/classification/statsmodels_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
+| `py/statistics/statsmodels_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
+| `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
+| `py/classification/svm.py` | 分类 | 标准化 + SVM 分类 |
+| `py/classification/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
+| `py/classification/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
+| `py/clustering/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
+| `py/clustering/dbscan.py` | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
 | `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
 | `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
 | `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
@@ -74,7 +89,7 @@ MCMCode/
 
 ```python
 import pandas as pd
-from py.data_clean import handle_missing
+from py.preprocessing.data_clean import handle_missing
 
 df = pd.read_csv("附件.csv")
 df = handle_missing(df)
@@ -86,7 +101,7 @@ df = handle_missing(df)
 
 ```python
 import numpy as np
-from py.entropy_weight import entropy_weight
+from py.evaluation.entropy_weight import entropy_weight
 
 X = np.array([
     [10, 100],
@@ -107,7 +122,7 @@ print(weights)
 
 ```python
 import numpy as np
-from py.topsis import topsis
+from py.evaluation.topsis import topsis
 
 w = np.array([0.4, 0.6])
 direction = np.array([1, -1])
@@ -121,7 +136,7 @@ print("从优到劣的行号:", order)
 ### GM(1,1)
 
 ```python
-from py.gm11 import gm11
+from py.forecasting.gm11 import gm11
 
 forecast, (a, b), fitted = gm11(
     [12, 15, 19, 24, 30],
@@ -138,7 +153,7 @@ print("预测值:", forecast)
 
 ```python
 import numpy as np
-from py.exponential_smoothing import exponential_smoothing
+from py.forecasting.ese import exponential_smoothing
 
 y = np.array([102, 105, 107, 111, 115, 114, 119, 123], dtype=float)
 level, forecast = exponential_smoothing(y, alpha=0.3, steps=3)
@@ -158,7 +173,7 @@ print("预测值:", forecast)
 以 SVM 为例：
 
 ```python
-from py.svm import train_svm
+from py.classification.svm import train_svm
 
 model, result = train_svm(X, y)
 print(result["accuracy"])
@@ -168,6 +183,42 @@ predictions = model.predict(X_new)
 `train_knn`、`train_svm`、`fit_logistic` 和 `train_random_forest` 都会划分训练集与测试集并返回模型和结果。KNN、SVM、Logistic 回归使用了 `StandardScaler`；标准化被放在 Pipeline 中，以避免测试集信息泄漏到训练过程。
 
 回归模板位于 `py/regression/`，提供 `fit_linear_regression`、`fit_polynomial_regression` 和 `fit_ridge_regression`。它们都返回训练后的 `model`、测试集预测值和 `mae`、`mse`、`rmse`、`r2` 等指标；`standardize=True` 时，标准化在 Pipeline 中完成。
+
+### statsmodels 统计建模
+
+连续型目标使用 OLS：
+
+```python
+from py.regression.statsmodels_ols import fit_ols, diagnose_ols
+
+output = fit_ols(X, y, robust=True)
+print(output["rmse"], output["r2"])
+print(output["model"].summary())
+print(diagnose_ols(output["model"], output["X_train"]))
+```
+
+二分类目标使用 Logit，`y` 必须是 `0/1`：
+
+```python
+from py.classification.statsmodels_logit import fit_logit
+
+output = fit_logit(X, y)
+print(output["accuracy"])
+print(output["odds_ratio"])
+print(output["model"].summary())
+```
+
+这两个模板都先划分训练集和测试集；`summary()`、系数、p 值和优势比来自训练集，MAE/RMSE/R² 或准确率来自独立测试集。
+
+常用假设检验：
+
+```python
+from py.statistics.statsmodels_tests import chi_square, one_way_anova, welch_ttest
+
+print(welch_ttest(group_a, group_b))
+print(chi_square([[180, 20], [150, 50]]))
+print(one_way_anova(df, target="yield", group="plan"))
+```
 
 聚类模板 `train_kmeans` 和 `train_dbscan` 接收二维特征矩阵 `X`，返回模型和聚类结果。DBSCAN 的标签 `-1` 表示噪声点；KMeans 需要预先指定 `n_clusters`。
 
@@ -196,9 +247,11 @@ predictions = model.predict(X_new)
 - NumPy 2.x
 - pandas 2.x
 - scikit-learn 1.5+
+- statsmodels 0.14+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
 
 ## 参考资料
 
-https://scikit-learn.org/stable/api/index.html
+https://scikit-learn.org
+https://www.statsmodels.org
