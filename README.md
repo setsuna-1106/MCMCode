@@ -71,6 +71,7 @@ MCMCode/
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
+| `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
 | `py/statistics/sm_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
 | `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
@@ -215,6 +216,17 @@ print(output["rmse"], output["r2"])
 print(output["model"].summary())
 print(diagnose_ols(output["model"], output["X_train"]))
 ```
+
+也可以直接使用独立的诊断模板：
+
+```python
+from py.regression.sm_diagnostics import fit_ols_diagnostics
+
+output = fit_ols_diagnostics(X, y, feature_names=feature_names)
+print(output["diagnostics"])
+```
+
+诊断结果包括 Jarque-Bera 正态性检验、Breusch-Pagan 异方差检验、Durbin-Watson 自相关统计量和各特征 VIF。
 
 二分类目标使用 Logit，`y` 必须是 `0/1`：
 

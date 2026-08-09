@@ -6,9 +6,11 @@ import numpy as np
 import statsmodels.api as sm
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
-from statsmodels.stats.diagnostic import het_breuschpagan
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-from statsmodels.stats.stattools import durbin_watson, jarque_bera
+
+try:
+    from py.regression.sm_diagnostics import diagnose_ols
+except ModuleNotFoundError:
+    from sm_diagnostics import diagnose_ols
 
 
 def fit_ols(
@@ -48,28 +50,6 @@ def fit_ols(
         "mse": mse,
         "rmse": np.sqrt(mse),
         "r2": r2_score(y_test, y_pred),
-    }
-
-
-def diagnose_ols(result, X_train):
-    """Return normality, heteroscedasticity, autocorrelation, and VIF checks."""
-    X_train = np.asarray(X_train, dtype=float)
-    if X_train.ndim == 1:
-        X_train = X_train.reshape(-1, 1)
-    X_sm = sm.add_constant(X_train, has_constant="add")
-
-    _, jb_pvalue, _, _ = jarque_bera(result.resid)
-    _, bp_pvalue, _, _ = het_breuschpagan(result.resid, X_sm)
-    vif = np.array([
-        variance_inflation_factor(X_sm, i)
-        for i in range(1, X_sm.shape[1])
-    ])
-
-    return {
-        "jarque_bera_pvalue": jb_pvalue,
-        "breusch_pagan_pvalue": bp_pvalue,
-        "durbin_watson": durbin_watson(result.resid),
-        "vif": vif,
     }
 
 
