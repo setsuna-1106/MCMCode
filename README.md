@@ -25,10 +25,11 @@ python3 -m venv .venv
 .venv/bin/python py/classification/svm.py
 .venv/bin/python py/forecasting/gm11.py
 .venv/bin/python py/forecasting/ese.py
+.venv/bin/python py/forecasting/arima.py
 .venv/bin/python py/regression/LinearRegression.py
-.venv/bin/python py/regression/statsmodels_ols.py
-.venv/bin/python py/classification/statsmodels_logit.py
-.venv/bin/python py/statistics/statsmodels_tests.py
+.venv/bin/python py/regression/sm_ols.py
+.venv/bin/python py/classification/sm_logit.py
+.venv/bin/python py/statistics/sm_tests.py
 ```
 
 其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
@@ -45,7 +46,7 @@ MCMCode/
 ├── py/                          # Python 模板包
 │   ├── preprocessing/           # 数据清洗
 │   ├── evaluation/              # 熵权、TOPSIS 和模型评估
-│   ├── forecasting/             # GM(1,1) 和指数平滑
+│   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
 │   ├── classification/          # 分类模型
 │   ├── clustering/              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA
@@ -66,11 +67,12 @@ MCMCode/
 | `py/evaluation/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | `py/forecasting/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
 | `py/forecasting/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
+| `py/forecasting/arima.py` | 预测 | statsmodels ARIMA 评估和未来预测 |
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
-| `py/regression/statsmodels_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
-| `py/classification/statsmodels_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
-| `py/statistics/statsmodels_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
+| `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
+| `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
+| `py/statistics/sm_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
 | `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
 | `py/classification/svm.py` | 分类 | 标准化 + SVM 分类 |
 | `py/classification/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
@@ -163,6 +165,23 @@ print("预测值:", forecast)
 
 `y` 是按时间排列的一维序列，`alpha` 越大越重视最新观测值。返回的 `level` 是历史平滑值，`forecast` 是未来 `steps` 期预测；该方法不单独建模趋势和季节性。
 
+### ARIMA
+
+```python
+from py.forecasting.arima import fit_arima, predict_arima
+
+output = fit_arima(y, order=(1, 1, 1), test_size=0.2)
+print(output["rmse"], output["mape"])
+
+# 确定阶数后，用全部历史数据重新拟合，再预测未来。
+from statsmodels.tsa.arima.model import ARIMA
+
+model = ARIMA(y, order=output["order"]).fit()
+future = predict_arima(model, steps=3)
+```
+
+ARIMA 按时间顺序使用前段数据训练、后段数据测试，不随机打乱序列。`order=(p, d, q)` 分别表示自回归阶数、差分阶数和移动平均阶数。
+
 ### 机器学习分类与聚类
 
 分类模板通常接收：
@@ -189,7 +208,7 @@ predictions = model.predict(X_new)
 连续型目标使用 OLS：
 
 ```python
-from py.regression.statsmodels_ols import fit_ols, diagnose_ols
+from py.regression.sm_ols import fit_ols, diagnose_ols
 
 output = fit_ols(X, y, robust=True)
 print(output["rmse"], output["r2"])
@@ -200,7 +219,7 @@ print(diagnose_ols(output["model"], output["X_train"]))
 二分类目标使用 Logit，`y` 必须是 `0/1`：
 
 ```python
-from py.classification.statsmodels_logit import fit_logit
+from py.classification.sm_logit import fit_logit
 
 output = fit_logit(X, y)
 print(output["accuracy"])
@@ -213,7 +232,7 @@ print(output["model"].summary())
 常用假设检验：
 
 ```python
-from py.statistics.statsmodels_tests import chi_square, one_way_anova, welch_ttest
+from py.statistics.sm_tests import chi_square, one_way_anova, welch_ttest
 
 print(welch_ttest(group_a, group_b))
 print(chi_square([[180, 20], [150, 50]]))

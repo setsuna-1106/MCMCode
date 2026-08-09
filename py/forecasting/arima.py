@@ -1,0 +1,81 @@
+"""statsmodels ARIMA forecasting template."""
+
+from __future__ import annotations
+
+import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from statsmodels.tsa.arima.model import ARIMA
+
+
+def _mape(y_true, y_pred):
+    mask = y_true != 0
+    if not np.any(mask):
+        return np.nan
+    return np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
+
+
+def fit_arima(
+    y,
+    order=(1, 1, 1),
+    *,
+    test_size=0.2,
+    trend=None,
+):
+    """Fit ARIMA in time order and return test metrics and the fitted model."""
+    y = np.asarray(y, dtype=float)
+    if y.ndim != 1 or len(y) < 8 or not np.isfinite(y).all():
+        raise ValueError("y must be a 1D finite series with at least 8 values")
+    if len(order) != 3 or any(
+        not isinstance(value, (int, np.integer)) or value < 0 for value in order
+    ):
+        raise ValueError("order must be a tuple of three non-negative integers")
+
+    if isinstance(test_size, (int, np.integer)):
+        n_test = int(test_size)
+    else:
+        n_test = int(np.ceil(len(y) * float(test_size)))
+    if n_test < 1 or n_test >= len(y):
+        raise ValueError("test_size must leave at least one training value")
+
+    split = len(y) - n_test
+    y_train, y_test = y[:split], y[split:]
+    result = ARIMA(y_train, order=order, trend=trend).fit()
+    forecast = np.asarray(result.forecast(steps=n_test))
+    mse = mean_squared_error(y_test, forecast)
+
+    return {
+        "model": result,
+        "y_train": y_train,
+        "y_test": y_test,
+        "forecast": forecast,
+        "mae": mean_absolute_error(y_test, forecast),
+        "mse": mse,
+        "rmse": np.sqrt(mse),
+        "mape": _mape(y_test, forecast),
+        "order": order,
+    }
+
+
+def predict_arima(result, steps=1):
+    """Forecast future values from a fitted ARIMA result."""
+    if not isinstance(steps, (int, np.integer)) or steps < 1:
+        raise ValueError("steps must be a positive integer")
+    return np.asarray(result.forecast(steps=int(steps)))
+
+
+if __name__ == "__main__":
+    # Replace y with a 1D series ordered from earliest to latest.
+    rng = np.random.default_rng(42)
+    t = np.linspace(0, 8 * np.pi, 100)
+    y = 100 + np.linspace(0, 40, 100) + 10 * np.sin(t)
+    y += rng.normal(0, 1, 100)
+
+    output = fit_arima(y, order=(1, 1, 1), test_size=0.2)
+    print(f"MAE:  {output['mae']:.4f}")
+    print(f"RMSE: {output['rmse']:.4f}")
+    print(f"MAPE: {output['mape']:.2f}%")
+    print("test forecast:", output["forecast"])
+
+    # Select order on the historical split, then refit on all data for future use.
+    full_model = ARIMA(y, order=output["order"]).fit()
+    print("future forecast:", predict_arima(full_model, steps=3))
