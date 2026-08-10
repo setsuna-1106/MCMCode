@@ -32,6 +32,7 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/scipy_linprog.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/interpolation/scipy_interpolate.py
+.venv/bin/python py/integration/scipy_integrate.py
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
@@ -59,6 +60,7 @@ MCMCode/
 │   ├── optimization/            # 优化模型
 │   ├── ode/                     # 常微分方程数值求解
 │   ├── interpolation/           # 插值模型
+│   ├── integration/             # 数值积分
 │   └── statistics/              # 假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
@@ -96,6 +98,7 @@ MCMCode/
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
 | `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | `py/interpolation/scipy_interpolate.py` | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
+| `py/integration/scipy_integrate.py` | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
 
 ## 常用接口
 
@@ -340,6 +343,29 @@ y_new = interpolate_1d(x, y, x_new, kind="cubic")
 ```
 
 `linear` 稳定且不易过冲，`cubic` 更平滑，`pchip` 适合保持单调性的数据。默认不外推观测区间外的点，若确认外推合理，再设置 `extrapolate=True`。
+
+### scipy 数值积分
+
+`scipy_integrate.py` 使用 `scipy.integrate.quad` 计算一维定积分，并返回积分值和误差估计：
+
+```python
+import numpy as np
+from py.integration.scipy_integrate import integrate_1d
+
+def integrand(x, rate):
+    return np.exp(-rate * x)
+
+value, error = integrate_1d(
+    integrand,
+    0.0,
+    np.inf,
+    args=(0.3,),
+)
+print("积分值:", value)
+print("误差估计:", error)
+```
+
+`args` 用于传递被积函数参数；函数存在已知间断点、尖点或剧烈变化时，将分割点传给 `points`，例如 `points=[1.0, 2.0]`。积分值应结合误差估计、函数连续性和题目物理意义检查。
 
 ### statsmodels 统计建模
 
