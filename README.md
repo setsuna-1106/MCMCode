@@ -28,6 +28,9 @@ python3 -m venv .venv
 .venv/bin/python py/forecasting/arima.py
 .venv/bin/python py/regression/LinearRegression.py
 .venv/bin/python py/regression/scipy_curve_fit.py
+.venv/bin/python py/optimization/scipy_minimize.py
+.venv/bin/python py/optimization/scipy_linprog.py
+.venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
@@ -52,6 +55,8 @@ MCMCode/
 │   ├── clustering/              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA
 │   ├── regression/              # 回归模型和任意函数拟合
+│   ├── optimization/            # 优化模型
+│   ├── ode/                     # 常微分方程数值求解
 │   └── statistics/              # 假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
@@ -85,6 +90,9 @@ MCMCode/
 | `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
 | `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
 | `py/regression/scipy_curve_fit.py` | 回归 | scipy 任意函数拟合与参数评估 |
+| `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
+| `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
+| `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 
 ## 常用接口
 
@@ -244,6 +252,75 @@ future = predict_curve_multi(plane, X_new, output["params"])
 ```
 
 一元函数必须写成 `model_func(x, *params)`；多元函数接收的 `X` 形状为 `(特征数, 样本数)`。`p0` 是参数初值，`bounds` 是参数上下界。两种入口都会先划分训练集和测试集，再用 `curve_fit` 拟合训练数据并评估测试数据。
+
+### scipy 线性规划
+
+`scipy_linprog.py` 使用标准形式求解连续线性规划：
+
+```python
+import numpy as np
+from py.optimization.scipy_linprog import solve_linprog
+
+c = -np.array([3.0, 5.0])  # 最大化收益时取负，linprog 本身执行最小化
+A_ub = np.array([[2.0, 1.0], [1.0, 2.0]])
+b_ub = np.array([8.0, 8.0])
+bounds = [(0, None), (0, None)]
+
+result = solve_linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds)
+print("最优变量:", result.x)
+print("最大收益:", -result.fun)
+```
+
+不等式约束统一写成 `A_ub @ x <= b_ub`，等式约束写成 `A_eq @ x == b_eq`；整数规划应改用 `scipy.optimize.milp`。
+
+### scipy 连续优化
+
+`scipy_minimize.py` 使用 `scipy.optimize.minimize` 求解带边界或非线性约束的连续优化问题：
+
+```python
+from py.optimization.scipy_minimize import solve_minimize
+
+def objective(x):
+    x1, x2 = x
+    return (x1 - 2) ** 2 + (x2 - 3) ** 2
+
+result = solve_minimize(
+    objective,
+    x0=[1, 1],
+    bounds=[(0, None), (0, None)],
+    constraints=[
+        {"type": "ineq", "fun": lambda x: 4 - x[0] - x[1]},
+    ],
+)
+print("最优变量:", result.x)
+print("最小目标值:", result.fun)
+```
+
+`SLSQP` 的不等式约束必须写成 `g(x) >= 0`；例如 `x1 + x2 <= 4` 应写成 `4 - x1 - x2`。无约束问题可以省略 `bounds` 和 `constraints`，再根据需要选择 `BFGS` 或 `L-BFGS-B`。
+
+### scipy 常微分方程
+
+`scipy_solve_ivp.py` 使用 `scipy.integrate.solve_ivp` 求解初值问题：
+
+```python
+import numpy as np
+from py.ode.scipy_solve_ivp import solve_ode
+
+def rhs(t, y, rate):
+    return [-rate * y[0]]
+
+result = solve_ode(
+    rhs,
+    t_span=(0, 10),
+    y0=[1.0],
+    t_eval=np.linspace(0, 10, 101),
+    args=(0.3,),
+)
+print("时间:", result.t)
+print("状态:", result.y)
+```
+
+方程函数必须返回与 `y0` 同长度的导数向量；`t_eval` 控制输出时刻，`args` 传入方程参数，`events` 可用于检测达到阈值、碰撞或终止条件。默认使用 `RK45`，刚性方程可改用 `BDF` 或 `Radau`。
 
 ### statsmodels 统计建模
 
