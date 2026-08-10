@@ -31,6 +31,7 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/scipy_minimize.py
 .venv/bin/python py/optimization/scipy_linprog.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
+.venv/bin/python py/interpolation/scipy_interpolate.py
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
@@ -57,6 +58,7 @@ MCMCode/
 │   ├── regression/              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型
 │   ├── ode/                     # 常微分方程数值求解
+│   ├── interpolation/           # 插值模型
 │   └── statistics/              # 假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
@@ -93,6 +95,7 @@ MCMCode/
 | `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
 | `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
+| `py/interpolation/scipy_interpolate.py` | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 
 ## 常用接口
 
@@ -321,6 +324,22 @@ print("状态:", result.y)
 ```
 
 方程函数必须返回与 `y0` 同长度的导数向量；`t_eval` 控制输出时刻，`args` 传入方程参数，`events` 可用于检测达到阈值、碰撞或终止条件。默认使用 `RK45`，刚性方程可改用 `BDF` 或 `Radau`。
+
+### scipy 插值
+
+`scipy_interpolate.py` 用观测点构造一维插值函数：
+
+```python
+import numpy as np
+from py.interpolation.scipy_interpolate import interpolate_1d
+
+x = np.array([0.0, 1.0, 2.0, 3.0])
+y = np.array([0.0, 1.0, 4.0, 9.0])
+x_new = np.linspace(0.0, 3.0, 31)
+y_new = interpolate_1d(x, y, x_new, kind="cubic")
+```
+
+`linear` 稳定且不易过冲，`cubic` 更平滑，`pchip` 适合保持单调性的数据。默认不外推观测区间外的点，若确认外推合理，再设置 `extrapolate=True`。
 
 ### statsmodels 统计建模
 
