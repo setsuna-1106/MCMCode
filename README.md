@@ -447,5 +447,26 @@ print(one_way_anova(df, target="yield", group="plan"))
 
 ## 参考资料
 
-https://scikit-learn.org
-https://www.statsmodels.org
+### SciPy
+
+- [SciPy 官方文档](https://docs.scipy.org/doc/scipy/)
+- [SciPy 用户指南](https://docs.scipy.org/doc/scipy/tutorial/index.html)
+- [`scipy.optimize.minimize`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html)
+- [`scipy.optimize.linprog`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html)
+- [`scipy.optimize.milp`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html)
+- [`scipy.optimize.curve_fit`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html)
+- [`scipy.integrate.solve_ivp`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html)
+- [`scipy.integrate.quad`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.quad.html)
+- [`scipy.interpolate.interp1d`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html)
+- [`scipy.interpolate.CubicSpline`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.CubicSpline.html)
+- [`scipy.interpolate.PchipInterpolator`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html)
+
+### Python 科学计算
+
+- [Python 官方文档](https://docs.python.org/3/)
+- [NumPy 官方文档](https://numpy.org/doc/stable/)
+- [pandas 官方文档](https://pandas.pydata.org/docs/)
+- [scikit-learn 官方文档](https://scikit-learn.org/stable/)
+- [scikit-learn 用户指南](https://scikit-learn.org/stable/user_guide.html)
+- [statsmodels 官方文档](https://www.statsmodels.org/stable/)
+- [statsmodels 用户指南](https://www.statsmodels.org/stable/user-guide.html)
