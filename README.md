@@ -23,11 +23,13 @@ python3 -m venv .venv
 ```bash
 .venv/bin/python py/classification/knn.py
 .venv/bin/python py/classification/svm.py
+.venv/bin/python py/classification/xgboost_classification.py
 .venv/bin/python py/forecasting/gm11.py
 .venv/bin/python py/forecasting/ese.py
 .venv/bin/python py/forecasting/arima.py
 .venv/bin/python py/regression/LinearRegression.py
 .venv/bin/python py/regression/scipy_curve_fit.py
+.venv/bin/python py/regression/xgboost_regression.py
 .venv/bin/python py/optimization/scipy_minimize.py
 .venv/bin/python py/optimization/scipy_linprog.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
@@ -86,6 +88,7 @@ MCMCode/
 | `py/statistics/sm_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
 | `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
 | `py/classification/svm.py` | 分类 | 标准化 + SVM 分类 |
+| `py/classification/xgboost_classification.py` | 分类 | XGBoost 分类、评估和特征重要性 |
 | `py/classification/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
 | `py/classification/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
 | `py/clustering/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
@@ -94,6 +97,7 @@ MCMCode/
 | `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
 | `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
 | `py/regression/scipy_curve_fit.py` | 回归 | scipy 任意函数拟合与参数评估 |
+| `py/regression/xgboost_regression.py` | 回归 | XGBoost 回归、评估和特征重要性 |
 | `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
 | `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
@@ -217,6 +221,32 @@ predictions = model.predict(X_new)
 ```
 
 `train_knn`、`train_svm`、`fit_logistic` 和 `train_random_forest` 都会划分训练集与测试集并返回模型和结果。KNN、SVM、Logistic 回归使用了 `StandardScaler`；标准化被放在 Pipeline 中，以避免测试集信息泄漏到训练过程。
+
+### XGBoost 分类与回归
+
+分类和回归模板分别使用 `XGBClassifier` 与 `XGBRegressor`。XGBoost 是树模型，通常不需要标准化；输入 `X` 仍需是数值特征矩阵。
+
+```python
+from py.classification.xgboost_classification import (
+    predict_xgboost_classifier,
+    train_xgboost_classifier,
+)
+from py.regression.xgboost_regression import train_xgboost_regressor
+
+classifier, classification_result = train_xgboost_classifier(X, y_class)
+print(classification_result["accuracy"])
+print(predict_xgboost_classifier(
+    classifier,
+    X_new,
+    classification_result["label_encoder"],
+))
+
+regressor, regression_result = train_xgboost_regressor(X, y_value)
+print(regression_result["rmse"], regression_result["r2"])
+print(regressor.predict(X_new))
+```
+
+`n_estimators`、`max_depth`、`learning_rate`、`subsample` 和 `colsample_bytree` 是最常用的调参入口；正式建模时应在训练集上配合交叉验证或验证集调参，避免测试集信息泄漏。
 
 回归模板位于 `py/regression/`，提供 `fit_linear_regression`、`fit_polynomial_regression` 和 `fit_ridge_regression`。它们都返回训练后的 `model`、测试集预测值和 `mae`、`mse`、`rmse`、`r2` 等指标；`standardize=True` 时，标准化在 Pipeline 中完成。
 
@@ -442,6 +472,7 @@ print(one_way_anova(df, target="yield", group="plan"))
 - pandas 2.x
 - scikit-learn 1.5+
 - statsmodels 0.14+
+- XGBoost 2.1+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
 
@@ -470,3 +501,9 @@ print(one_way_anova(df, target="yield", group="plan"))
 - [scikit-learn 用户指南](https://scikit-learn.org/stable/user_guide.html)
 - [statsmodels 官方文档](https://www.statsmodels.org/stable/)
 - [statsmodels 用户指南](https://www.statsmodels.org/stable/user-guide.html)
+
+### XGBoost
+
+- [XGBoost 官方文档](https://xgboost.readthedocs.io/en/stable/)
+- [XGBoost Python API](https://xgboost.readthedocs.io/en/stable/python/python_api.html)
+- [XGBoost 参数说明](https://xgboost.readthedocs.io/en/stable/parameter.html)
