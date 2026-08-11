@@ -40,6 +40,7 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/ortools_assignment.py
 .venv/bin/python py/optimization/ortools_min_cost_flow.py
 .venv/bin/python py/optimization/ortools_routing.py
+.venv/bin/python py/evaluation/sensitivity.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/interpolation/scipy_interpolate.py
 .venv/bin/python py/integration/scipy_integrate.py
@@ -90,6 +91,7 @@ MCMCode/
 | `py/forecasting/arima.py` | 预测 | statsmodels ARIMA 评估和未来预测 |
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
+| `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
 | `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
@@ -135,6 +137,54 @@ df = handle_missing(df)
 ```
 
 `handle_missing` 只处理数值列；文本列、分类列和日期列需要根据题意单独处理。
+
+### 灵敏度分析
+
+`sensitivity.py` 统一使用 `model(params) -> 标量` 接口，包含四种常用分析：
+
+```python
+import numpy as np
+from py.evaluation.sensitivity import (
+    local_sensitivity,
+    monte_carlo_sensitivity,
+    one_way_sensitivity,
+    two_way_sensitivity,
+)
+
+def model(params):
+    return params["price"] * params["quantity"] - params["cost"]
+
+base_params = {"price": 10.0, "quantity": 80.0, "cost": 100.0}
+
+# 局部灵敏度：中心差分导数和弹性系数
+local = local_sensitivity(model, base_params, "price", step=0.01)
+
+# 一因素：固定其他参数，扫描 quantity
+one_way = one_way_sensitivity(
+    model, base_params, "quantity", np.linspace(60, 100, 9)
+)
+
+# 双因素：输出矩阵的行对应 price，列对应 cost
+two_way = two_way_sensitivity(
+    model, base_params, "price", [8, 10, 12], "cost", [80, 100, 120]
+)
+
+# Monte Carlo：sampler 每次返回一组扰动后的参数
+def sampler(rng):
+    return {
+        "price": rng.uniform(8, 12),
+        "quantity": rng.uniform(70, 90),
+        "cost": rng.uniform(80, 120),
+    }
+
+monte_carlo = monte_carlo_sensitivity(model, sampler, n_samples=2000)
+print(local["elasticity"])
+print(one_way["outputs"])
+print(two_way["outputs"])
+print(monte_carlo["correlation"])
+```
+
+局部分析适合判断基准点附近的影响；一因素和双因素分析适合画折线图、热力图；Monte Carlo 适合参数存在区间或概率分布时判断输出稳定性。相关系数只能反映单变量线性关联，最终应结合输出分布、分位数和题目实际意义解释。
 
 ### 熵权法
 
