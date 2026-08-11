@@ -32,6 +32,8 @@ python3 -m venv .venv
 .venv/bin/python py/regression/xgboost_regression.py
 .venv/bin/python py/optimization/scipy_minimize.py
 .venv/bin/python py/optimization/scipy_linprog.py
+.venv/bin/python py/optimization/pulp_lp.py
+.venv/bin/python py/optimization/pulp_milp.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/interpolation/scipy_interpolate.py
 .venv/bin/python py/integration/scipy_integrate.py
@@ -59,7 +61,7 @@ MCMCode/
 │   ├── clustering/              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA
 │   ├── regression/              # 回归模型和任意函数拟合
-│   ├── optimization/            # 优化模型
+│   ├── optimization/            # 优化模型（SciPy、PuLP）
 │   ├── ode/                     # 常微分方程数值求解
 │   ├── interpolation/           # 插值模型
 │   ├── integration/             # 数值积分
@@ -100,6 +102,8 @@ MCMCode/
 | `py/regression/xgboost_regression.py` | 回归 | XGBoost 回归、评估和特征重要性 |
 | `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
+| `py/optimization/pulp_lp.py` | 优化 | PuLP 连续线性规划、资源约束和变量边界 |
+| `py/optimization/pulp_milp.py` | 优化 | PuLP 混合整数线性规划、整数变量和 0-1 变量 |
 | `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | `py/interpolation/scipy_interpolate.py` | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 | `py/integration/scipy_integrate.py` | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
@@ -307,7 +311,50 @@ print("最优变量:", result.x)
 print("最大收益:", -result.fun)
 ```
 
-不等式约束统一写成 `A_ub @ x <= b_ub`，等式约束写成 `A_eq @ x == b_eq`；整数规划应改用 `scipy.optimize.milp`。
+不等式约束统一写成 `A_ub @ x <= b_ub`，等式约束写成 `A_eq @ x == b_eq`。需要整数变量时，也可以使用下面的 PuLP 模板。
+
+### PuLP 线性规划
+
+`pulp_lp.py` 使用 PuLP 的代数建模方式求解连续线性规划，默认最大化目标：
+
+```python
+import numpy as np
+import pulp
+from py.optimization.pulp_lp import solve_lp
+
+model, variables = solve_lp(
+    objective=[3, 5],
+    A_ub=np.array([[2, 1], [1, 2]]),
+    b_ub=[8, 8],
+    bounds=[(0, None), (0, None)],
+)
+print("状态:", pulp.LpStatus[model.status])
+print("最优变量:", [variable.value() for variable in variables])
+print("目标值:", pulp.value(model.objective))
+```
+
+`objective` 是目标函数系数；`bounds` 中的 `None` 表示无界。最小化时传入 `sense=pulp.LpMinimize`。函数返回 `(model, variables)`，约束仍按 `A_ub @ x <= b_ub` 和 `A_eq @ x == b_eq` 传入。
+
+### PuLP 混合整数线性规划
+
+`pulp_milp.py` 与 LP 模板的约束写法相同，通过 `categories` 指定变量类型：
+
+```python
+import pulp
+from py.optimization.pulp_milp import solve_milp
+
+model, variables = solve_milp(
+    objective=[3, 5, -4],
+    A_ub=[[2, 1, 0], [1, 2, 0], [1, 1, -8]],
+    b_ub=[8, 8, 0],
+    bounds=[(0, None), (0, None), (0, 1)],
+    categories=[pulp.LpInteger, pulp.LpInteger, pulp.LpBinary],
+)
+print("最优变量:", [variable.value() for variable in variables])
+print("目标值:", pulp.value(model.objective))
+```
+
+`categories` 可使用 `pulp.LpInteger`、`pulp.LpBinary` 和 `pulp.LpContinuous`；默认全部为整数变量。带有整数或 0-1 决策变量的生产、选址、分配和排班问题可从此模板改写。
 
 ### scipy 连续优化
 
@@ -473,6 +520,7 @@ print(one_way_anova(df, target="yield", group="plan"))
 - scikit-learn 1.5+
 - statsmodels 0.14+
 - XGBoost 2.1+
+- PuLP 2.9+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
 
@@ -491,6 +539,11 @@ print(one_way_anova(df, target="yield", group="plan"))
 - [`scipy.interpolate.interp1d`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html)
 - [`scipy.interpolate.CubicSpline`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.CubicSpline.html)
 - [`scipy.interpolate.PchipInterpolator`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html)
+
+### PuLP
+
+- [PuLP 官方文档](https://coin-or.github.io/pulp/)
+- [PuLP GitHub](https://github.com/coin-or/pulp)
 
 ### Python 科学计算
 
