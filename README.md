@@ -34,6 +34,12 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/scipy_linprog.py
 .venv/bin/python py/optimization/pulp_lp.py
 .venv/bin/python py/optimization/pulp_milp.py
+.venv/bin/python py/optimization/ortools_lp.py
+.venv/bin/python py/optimization/ortools_milp.py
+.venv/bin/python py/optimization/ortools_cp_sat.py
+.venv/bin/python py/optimization/ortools_assignment.py
+.venv/bin/python py/optimization/ortools_min_cost_flow.py
+.venv/bin/python py/optimization/ortools_routing.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/interpolation/scipy_interpolate.py
 .venv/bin/python py/integration/scipy_integrate.py
@@ -61,7 +67,7 @@ MCMCode/
 │   ├── clustering/              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA
 │   ├── regression/              # 回归模型和任意函数拟合
-│   ├── optimization/            # 优化模型（SciPy、PuLP）
+│   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
 │   ├── ode/                     # 常微分方程数值求解
 │   ├── interpolation/           # 插值模型
 │   ├── integration/             # 数值积分
@@ -104,6 +110,12 @@ MCMCode/
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
 | `py/optimization/pulp_lp.py` | 优化 | PuLP 连续线性规划、资源约束和变量边界 |
 | `py/optimization/pulp_milp.py` | 优化 | PuLP 混合整数线性规划、整数变量和 0-1 变量 |
+| `py/optimization/ortools_lp.py` | 优化 | OR-Tools GLOP 连续线性规划 |
+| `py/optimization/ortools_milp.py` | 优化 | OR-Tools CBC 混合整数线性规划 |
+| `py/optimization/ortools_cp_sat.py` | 优化 | OR-Tools CP-SAT 单机器排程和先后约束 |
+| `py/optimization/ortools_assignment.py` | 优化 | OR-Tools CP-SAT 指派问题 |
+| `py/optimization/ortools_min_cost_flow.py` | 优化 | OR-Tools 最小费用流和运输网络 |
+| `py/optimization/ortools_routing.py` | 优化 | OR-Tools RoutingModel 单车辆 TSP |
 | `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | `py/interpolation/scipy_interpolate.py` | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 | `py/integration/scipy_integrate.py` | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
@@ -356,6 +368,49 @@ print("目标值:", pulp.value(model.objective))
 
 `categories` 可使用 `pulp.LpInteger`、`pulp.LpBinary` 和 `pulp.LpContinuous`；默认全部为整数变量。带有整数或 0-1 决策变量的生产、选址、分配和排班问题可从此模板改写。
 
+### OR-Tools 常用优化模板
+
+OR-Tools 模板按问题结构选择接口：`pywraplp` 用于 LP/MILP，`CP-SAT` 用于整数逻辑和排程，最小费用流用于网络运输，`RoutingModel` 用于 TSP/VRP。
+
+#### OR-Tools 线性规划与混合整数规划
+
+`ortools_lp.py` 默认使用 `GLOP` 求解连续 LP；`ortools_milp.py` 默认使用 `CBC_MIXED_INTEGER_PROGRAMMING` 求解 MILP。两个模板都使用 `A_ub @ x <= b_ub`、`A_eq @ x == b_eq` 和 `bounds`：
+
+```python
+from py.optimization.ortools_lp import solve_lp
+
+solver, variables, status = solve_lp(
+    objective=[3, 5],
+    A_ub=[[2, 1], [1, 2]],
+    b_ub=[8, 8],
+    bounds=[(0, None), (0, None)],
+)
+print([variable.solution_value() for variable in variables])
+print(solver.Objective().Value())
+```
+
+MILP 中通过 `categories=["I", "I", "B"]` 指定整数、整数和 0-1 变量；连续变量使用 `"C"`。最大化使用默认参数，最小化传入 `maximize=False`。
+
+#### CP-SAT 排程与指派
+
+`ortools_cp_sat.py` 使用整数开始时间、结束时间和 `AddNoOverlap` 表示单机器排程；`ortools_assignment.py` 使用布尔变量表示对象-任务分配。CP-SAT 适合排班、先后关系、逻辑条件和组合约束，不适合作为普通连续优化器。
+
+```python
+from py.optimization.ortools_cp_sat import solve_schedule
+
+_, solver, starts, ends, status = solve_schedule(
+    durations=[3, 2, 4],
+    precedences=[(0, 2)],
+)
+print([solver.Value(start) for start in starts])
+```
+
+CP-SAT 的系数和时间通常使用整数；若原始数据含小数，先统一乘以 `10`、`100` 等倍数再取整。
+
+#### 最小费用流与路径规划
+
+`ortools_min_cost_flow.py` 使用 `(tail, head, capacity, unit_cost)` 表示网络弧，节点供给为正、需求为负，适合运输和资源流动问题。`ortools_routing.py` 使用 `RoutingModel` 求解 TSP；车辆容量、时间窗和多车辆问题应在此基础上增加对应维度。
+
 ### scipy 连续优化
 
 `scipy_minimize.py` 使用 `scipy.optimize.minimize` 求解带边界或非线性约束的连续优化问题：
@@ -521,6 +576,7 @@ print(one_way_anova(df, target="yield", group="plan"))
 - statsmodels 0.14+
 - XGBoost 2.1+
 - PuLP 2.9+
+- OR-Tools 9.15+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
 
@@ -544,6 +600,11 @@ print(one_way_anova(df, target="yield", group="plan"))
 
 - [PuLP 官方文档](https://coin-or.github.io/pulp/)
 - [PuLP GitHub](https://github.com/coin-or/pulp)
+
+### OR-Tools
+
+- [OR-Tools 官方文档](https://developers.google.com/optimization)
+- [OR-Tools Python API](https://or-tools.github.io/docs/python/)
 
 ### Python 科学计算
 
