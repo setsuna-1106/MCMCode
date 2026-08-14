@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """NetworkX 最大权匹配最小可执行模板。
 
 无向边使用 (u, v, weight)；二分图也可以使用该模板。

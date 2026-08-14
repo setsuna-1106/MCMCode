@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """NetworkX DAG 关键路径最小可执行模板。
 
 有向边使用 (before, after, duration)，图必须是有向无环图。

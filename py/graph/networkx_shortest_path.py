@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """NetworkX 加权最短路径最小可执行模板。"""
 
 import networkx as nx

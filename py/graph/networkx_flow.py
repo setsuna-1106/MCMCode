@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """NetworkX 最大流和最小割最小可执行模板。
 
 有向边使用 (u, v, capacity)；容量放在 edge['capacity'] 中。

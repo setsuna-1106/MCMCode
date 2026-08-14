@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """NetworkX 建图、遍历和连通性最小可执行模板。
 
 边数据使用 (u, v, weight)；无权边也可以只写 (u, v)。
