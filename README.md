@@ -41,6 +41,7 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/ortools_min_cost_flow.py
 .venv/bin/python py/optimization/ortools_routing.py
 .venv/bin/python py/evaluation/sensitivity.py
+.venv/bin/python py/evaluation/ahp.py
 .venv/bin/python py/graph/networkx_basics.py
 .venv/bin/python py/graph/networkx_shortest_path.py
 .venv/bin/python py/graph/networkx_mst.py
@@ -100,6 +101,7 @@ MCMCode/
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
+| `py/evaluation/ahp.py` | 评价方法 | AHP 权重、层次总排序和一致性检验 |
 | `py/graph/networkx_basics.py` | 图论 | 建图、遍历和连通性分析 |
 | `py/graph/networkx_shortest_path.py` | 图论 | 加权最短路径 |
 | `py/graph/networkx_mst.py` | 图论 | 最小生成树和网络建设成本 |
@@ -200,6 +202,33 @@ print(monte_carlo["correlation"])
 ```
 
 局部分析适合判断基准点附近的影响；一因素和双因素分析适合画折线图、热力图；Monte Carlo 适合参数存在区间或概率分布时判断输出稳定性。相关系数只能反映单变量线性关联，最终应结合输出分布、分位数和题目实际意义解释。
+
+### AHP 层次分析法
+
+`ahp.py` 使用最大特征值法计算判断矩阵权重，并完成准则层、方案层和总排序。判断矩阵必须是正互反矩阵；通常 `CR < 0.1` 时通过一致性检验。
+
+```python
+import numpy as np
+from py.evaluation.ahp import solve_ahp
+
+criteria = np.array([
+    [1, 2, 4],
+    [1 / 2, 1, 2],
+    [1 / 4, 1 / 2, 1],
+])
+alternatives = [
+    np.array([[1, 2], [1 / 2, 1]]),
+    np.array([[1, 1 / 3], [3, 1]]),
+    np.array([[1, 4], [1 / 4, 1]]),
+]
+
+result = solve_ahp(criteria, alternatives, require_consistent=True)
+print("准则权重:", result["criteria"]["weights"])
+print("方案总权重:", result["global_weights"])
+print("最优方案编号:", result["best_index"] + 1)
+```
+
+`result["criteria"]` 和 `result["alternatives"]` 中包含 `lambda_max`、`CI`、`RI`、`CR` 和 `consistent`；若只分析一个判断矩阵，直接调用 `ahp_weights`。判断矩阵不一致时，优先检查两两比较值及其倒数关系，再决定是否重新赋值。
 
 ### NetworkX 图论模板
 
