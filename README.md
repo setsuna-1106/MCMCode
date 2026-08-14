@@ -41,6 +41,13 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/ortools_min_cost_flow.py
 .venv/bin/python py/optimization/ortools_routing.py
 .venv/bin/python py/evaluation/sensitivity.py
+.venv/bin/python py/graph/networkx_basics.py
+.venv/bin/python py/graph/networkx_shortest_path.py
+.venv/bin/python py/graph/networkx_mst.py
+.venv/bin/python py/graph/networkx_flow.py
+.venv/bin/python py/graph/networkx_matching.py
+.venv/bin/python py/graph/networkx_critical_path.py
+.venv/bin/python py/graph/networkx_centrality.py
 .venv/bin/python py/ode/scipy_solve_ivp.py
 .venv/bin/python py/interpolation/scipy_interpolate.py
 .venv/bin/python py/integration/scipy_integrate.py
@@ -63,6 +70,7 @@ MCMCode/
 ├── py/                          # Python 模板包
 │   ├── preprocessing/           # 数据清洗
 │   ├── evaluation/              # 熵权、TOPSIS 和模型评估
+│   ├── graph/                   # 图论和网络分析
 │   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
 │   ├── classification/          # 分类模型
 │   ├── clustering/              # 聚类模型
@@ -92,6 +100,13 @@ MCMCode/
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
+| `py/graph/networkx_basics.py` | 图论 | 建图、遍历和连通性分析 |
+| `py/graph/networkx_shortest_path.py` | 图论 | 加权最短路径 |
+| `py/graph/networkx_mst.py` | 图论 | 最小生成树和网络建设成本 |
+| `py/graph/networkx_flow.py` | 图论 | 最大流和最小割 |
+| `py/graph/networkx_matching.py` | 图论 | 最大权匹配和指派关系 |
+| `py/graph/networkx_critical_path.py` | 图论 | DAG 关键路径和项目工期 |
+| `py/graph/networkx_centrality.py` | 图论 | 度、介数、接近中心性和 PageRank |
 | `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
@@ -185,6 +200,28 @@ print(monte_carlo["correlation"])
 ```
 
 局部分析适合判断基准点附近的影响；一因素和双因素分析适合画折线图、热力图；Monte Carlo 适合参数存在区间或概率分布时判断输出稳定性。相关系数只能反映单变量线性关联，最终应结合输出分布、分位数和题目实际意义解释。
+
+### NetworkX 图论模板
+
+NetworkX 模板统一使用节点和边表示网络结构，边属性根据问题选择 `weight`、`capacity` 或 `duration`。当前模板覆盖建图、最短路径、最小生成树、最大流、匹配、关键路径和中心性分析：
+
+```python
+import networkx as nx
+from py.graph.networkx_shortest_path import solve_shortest_path
+
+graph = nx.Graph()
+graph.add_weighted_edges_from([
+    ("A", "B", 2),
+    ("B", "C", 1),
+    ("C", "D", 3),
+])
+
+result = solve_shortest_path(graph, "A", "D")
+print(result["path"])
+print(result["distance"])
+```
+
+使用建议：`weight` 表示距离或成本，`capacity` 表示流量上限，`duration` 表示任务时长；最短路径使用 Dijkstra，网络建设使用最小生成树，运输瓶颈使用最大流/最小割，任务依赖使用 DAG 关键路径。NetworkX 负责图结构和图算法，复杂整数优化或车辆路径规划应结合 PuLP、SciPy 或 OR-Tools。
 
 ### 熵权法
 
@@ -627,6 +664,7 @@ print(one_way_anova(df, target="yield", group="plan"))
 - XGBoost 2.1+
 - PuLP 2.9+
 - OR-Tools 9.15+
+- NetworkX 3.3+
 
 具体版本范围见 [`requirements.txt`](requirements.txt)。
 
@@ -655,6 +693,11 @@ print(one_way_anova(df, target="yield", group="plan"))
 
 - [OR-Tools 官方文档](https://developers.google.com/optimization)
 - [OR-Tools Python API](https://or-tools.github.io/docs/python/)
+
+### NetworkX
+
+- [NetworkX 官方文档](https://networkx.org/documentation/stable/)
+- [NetworkX 算法文档](https://networkx.org/documentation/stable/reference/algorithms/index.html)
 
 ### Python 科学计算
 
