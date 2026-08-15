@@ -26,6 +26,7 @@ python3 -m venv .venv
 .venv/bin/python py/classification/xgboost_classification.py
 .venv/bin/python py/forecasting/gm11.py
 .venv/bin/python py/forecasting/ese.py
+.venv/bin/python py/forecasting/holt.py
 .venv/bin/python py/forecasting/arima.py
 .venv/bin/python py/regression/LinearRegression.py
 .venv/bin/python py/regression/scipy_curve_fit.py
@@ -98,6 +99,7 @@ MCMCode/
 | `py/evaluation/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | `py/forecasting/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
 | `py/forecasting/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
+| `py/forecasting/holt.py` | 预测 | Holt 二次指数平滑和 Holt-Winters 三次指数平滑 |
 | `py/forecasting/arima.py` | 预测 | statsmodels ARIMA 评估和未来预测 |
 | `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
@@ -347,6 +349,34 @@ print("预测值:", forecast)
 ```
 
 `y` 是按时间排列的一维序列，`alpha` 越大越重视最新观测值。返回的 `level` 是历史平滑值，`forecast` 是未来 `steps` 期预测；该方法不单独建模趋势和季节性。
+
+### Holt 二次和三次指数平滑
+
+```python
+import numpy as np
+from py.forecasting.holt import fit_holt, fit_holt_winters
+
+y = np.array(
+    [100, 106, 111, 104, 108, 114, 120, 112, 117, 123, 129, 121],
+    dtype=float,
+)
+
+# 二次指数平滑：水平项 + 趋势项
+holt = fit_holt(y, steps=4, damped_trend=True)
+print("Holt 预测:", holt["forecast"])
+
+# 三次指数平滑：水平项 + 趋势项 + 季节项
+holt_winters = fit_holt_winters(
+    y,
+    seasonal_periods=4,
+    steps=4,
+    trend="add",
+    seasonal="add",
+)
+print("Holt-Winters 预测:", holt_winters["forecast"])
+```
+
+`fit_holt` 适合有趋势但无明显季节性的序列；`fit_holt_winters` 需要设置季节周期，通常至少提供两个完整季节。`trend` 和 `seasonal` 可选 `"add"` 或 `"mul"`；使用乘法项时，`y` 必须全部大于 0。`damped_trend=True` 会逐步减弱远期趋势，适合不希望趋势无限增长的场景。两个函数都返回 `model`、`fitted`、`forecast` 和 `method`。
 
 ### ARIMA
 
