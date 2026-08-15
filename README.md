@@ -42,6 +42,7 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/ortools_routing.py
 .venv/bin/python py/evaluation/sensitivity.py
 .venv/bin/python py/evaluation/ahp.py
+.venv/bin/python py/evaluation/gra.py
 .venv/bin/python py/graph/networkx_basics.py
 .venv/bin/python py/graph/networkx_shortest_path.py
 .venv/bin/python py/graph/networkx_mst.py
@@ -102,6 +103,7 @@ MCMCode/
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
 | `py/evaluation/ahp.py` | 评价方法 | AHP 权重、层次总排序和一致性检验 |
+| `py/evaluation/gra.py` | 评价方法 | 灰色关联度、指标方向和加权排序 |
 | `py/graph/networkx_basics.py` | 图论 | 建图、遍历和连通性分析 |
 | `py/graph/networkx_shortest_path.py` | 图论 | 加权最短路径 |
 | `py/graph/networkx_mst.py` | 图论 | 最小生成树和网络建设成本 |
@@ -229,6 +231,34 @@ print("最优方案编号:", result["best_index"] + 1)
 ```
 
 `result["criteria"]` 和 `result["alternatives"]` 中包含 `lambda_max`、`CI`、`RI`、`CR` 和 `consistent`；若只分析一个判断矩阵，直接调用 `ahp_weights`。判断矩阵不一致时，优先检查两两比较值及其倒数关系，再决定是否重新赋值。
+
+### 灰色关联度分析
+
+`gra.py` 用参考序列和多个比较序列计算灰色关联系数与灰色关联度，支持收益型/成本型指标、指标权重和分辨系数 `rho`：
+
+```python
+import numpy as np
+from py.evaluation.gra import grey_relation
+
+reference = [1.0, 1.0, 0.0]
+comparison = np.array([
+    [0.9, 0.8, 0.4],
+    [0.8, 0.9, 0.3],
+    [0.7, 0.95, 0.5],
+])
+
+result = grey_relation(
+    reference,
+    comparison,
+    direction=[1, 1, -1],
+    weights=[0.4, 0.4, 0.2],
+    rho=0.5,
+)
+print("灰色关联度:", result["grades"])
+print("方案排序:", result["order"] + 1)
+```
+
+`reference` 是理想参考序列，`comparison` 每一行是一个方案；`direction` 中 `1` 表示收益型指标，`-1` 表示成本型指标。默认先按指标列做极差标准化，再计算关联系数；若数据已经完成无量纲化，可传入 `normalize=False`。
 
 ### NetworkX 图论模板
 
