@@ -9,7 +9,11 @@ from sklearn.preprocessing import StandardScaler
 
 
 def fit_logistic(X, y, test_size=0.2, random_state=42, C=1.0, max_iter=1000):
-    """训练模型并返回模型与测试集结果。X 为二维特征，y 为一维标签。"""
+    """
+    训练模型并返回模型与测试集结果。
+        X: shape 为 (样本数, 特征数) 的数值特征矩阵
+        y: shape 为 (样本数,) 的分类标签
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y).reshape(-1)
     if X.ndim == 1:

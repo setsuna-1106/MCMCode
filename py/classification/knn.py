@@ -1,4 +1,4 @@
-""" KNN 分类模板。
+""" KNN （k邻类）分类模板。
 
 使用时，只需要把 main() 中的 X、y 替换为：
     X: shape 为 (样本数, 特征数) 的数值特征矩阵
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris # 示例数据
 
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
@@ -31,7 +31,7 @@ def train_knn(
     X = np.asarray(X)
     y = np.asarray(y)
 
-# 避免不规范输入
+    # 避免不规范输入
     if X.ndim != 2:
         raise ValueError("X 必须是二维特征矩阵，形状为 (样本数, 特征数)")
     if y.ndim != 1 or len(X) != len(y):
@@ -39,6 +39,7 @@ def train_knn(
     if n_neighbors < 1:
         raise ValueError("n_neighbors 必须大于等于 1")
 
+    # 将数据分为训练集和测试集
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -51,7 +52,7 @@ def train_knn(
     model = make_pipeline(
         StandardScaler(),
         KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights),
-    )
+    )# 使用pipeline，避免数据污染
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_test)
@@ -66,8 +67,9 @@ def train_knn(
         "y_test": y_test,
         "y_pred": y_pred,
     }
+    # 使用放回的model进行分类
     return model, result
-
+ 
 
 def main() -> None:
     """默认使用 Iris 数据集演示

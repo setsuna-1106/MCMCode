@@ -77,18 +77,19 @@ MCMCode/
 │   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
 │   ├── classification/          # 分类模型
 │   ├── clustering/              # 聚类模型
-│   ├── dimensionality_reduction/ # PCA
+│   ├── dimensionality_reduction/ # PCA 降维模型
 │   ├── regression/              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
 │   ├── ode/                     # 常微分方程数值求解
 │   ├── interpolation/           # 插值模型
-│   ├── integration/             # 数值积分
-│   └── statistics/              # 假设检验
+│   ├── integration/             # 数值积分计算
+│   └── statistics/              # 统计假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
 ```
 
-目录名表示建模用途；模块接口保持独立，使用时直接替换示例中的 `X`、`y` 或数据表。
+目录名表示建模用途；
+所有模块接口保持彼此独立，使用时直接替换示例中的 `X`、`y` 或数据表。
 
 ## Python 模块
 
@@ -145,7 +146,7 @@ MCMCode/
 
 ## 常用接口
 
-展示常用接口使用示例
+展示常用接口的使用示例，使用时要遵守注释中的规范
 
 ### 数据清洗
 
