@@ -8,6 +8,7 @@ from statsmodels.tsa.arima.model import ARIMA
 
 
 def _mape(y_true, y_pred):
+    # MAPE 对真实值为 0 的位置没有定义，因此只在非零样本上计算。
     mask = y_true != 0
     if not np.any(mask):
         return np.nan
@@ -37,10 +38,13 @@ def fit_arima(
     if n_test < 1 or n_test >= len(y):
         raise ValueError("test_size must leave at least one training value")
 
+    # 时间序列按先后顺序切分，不能随机打乱，否则会用未来信息预测过去。
     split = len(y) - n_test
     y_train, y_test = y[:split], y[split:]
+    # 先在历史训练段拟合，再对紧接着的测试段做多步预测。
     result = ARIMA(y_train, order=order, trend=trend).fit()
     forecast = np.asarray(result.forecast(steps=n_test))
+    # 同时保留 MAE、MSE、RMSE 和 MAPE，便于按题目评价标准选用指标。
     mse = mean_squared_error(y_test, forecast)
 
     return {

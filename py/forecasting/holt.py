@@ -11,6 +11,7 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing, Holt
 
 
 def _validate_series(y, minimum_length):
+    # 两种模型都按时间顺序接收一维、有限历史序列。
     y = np.asarray(y, dtype=float)
     if y.ndim != 1 or y.size < minimum_length or not np.isfinite(y).all():
         raise ValueError(
@@ -20,6 +21,7 @@ def _validate_series(y, minimum_length):
 
 
 def _pack_result(result, steps, method):
+    # 统一 Holt 与 Holt-Winters 的返回结构，调用者无需区分底层结果类型。
     forecast = np.asarray(result.forecast(steps=int(steps)), dtype=float)
     return {
         "model": result,
@@ -42,6 +44,7 @@ def fit_holt(
     if not isinstance(steps, (int, np.integer)) or steps < 1:
         raise ValueError("steps 必须是正整数")
 
+    # Holt 同时估计水平项和趋势项；damped_trend 可让趋势逐步衰减。
     result = Holt(
         y,
         damped_trend=damped_trend,
@@ -72,10 +75,12 @@ def fit_holt_winters(
     if not isinstance(steps, (int, np.integer)) or steps < 1:
         raise ValueError("steps 必须是正整数")
 
+    # 至少需要两个完整季节周期，才能识别季节项的重复模式。
     y = _validate_series(y, minimum_length=2 * int(seasonal_periods))
     if (trend == "mul" or seasonal == "mul") and np.any(y <= 0):
         raise ValueError("乘法趋势或乘法季节项要求 y 全部大于 0")
 
+    # Holt-Winters 在水平、趋势之外再估计季节项；乘法项要求数据为正。
     result = ExponentialSmoothing(
         y,
         trend=trend,

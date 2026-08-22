@@ -5,6 +5,7 @@ import numpy as np
 
 def exponential_smoothing(y, alpha=0.3, steps=3):
     """返回历史平滑值和未来 steps 期预测。"""
+    # 一次指数平滑只建模水平项，不包含趋势或季节项。
     y = np.asarray(y, dtype=float)
     if y.ndim != 1 or y.size < 2 or not np.all(np.isfinite(y)):
         raise ValueError("y 必须是一维且至少包含 2 个有限数值")
@@ -14,6 +15,7 @@ def exponential_smoothing(y, alpha=0.3, steps=3):
         raise ValueError("steps 必须是正整数")
 
     # l_t = alpha*y_t + (1-alpha)*l_{t-1}
+    # 用第一期观测初始化水平项，之后递推更新每一期的平滑值。
     level = np.empty(y.size)
     level[0] = y[0]
     for t in range(1, y.size):
