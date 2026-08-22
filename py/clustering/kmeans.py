@@ -20,12 +20,12 @@ from sklearn.preprocessing import StandardScaler
 def train_kmeans(
     X: np.ndarray,
     *,
-    n_clusters: int = 3, # 聚类数
+    n_clusters: int = 3,  # 聚类数
     random_state: int = 42,
-    n_init: int = 10, # kmeans 算法总运行次数，选择最优的结构
+    n_init: int = 10,  # KMeans 算法总运行次数，选择最优的结构
 ) -> tuple[object, dict[str, object]]:
     """标准化数据、训练 KMeans，并返回模型和聚类结果。"""
-    
+    # 聚类没有监督标签，模型会直接利用全部样本寻找簇结构。
     X = np.asarray(X)
     
     if X.ndim != 2:
@@ -35,6 +35,7 @@ def train_kmeans(
     if n_clusters > len(X):
         raise ValueError("n_clusters 不能大于样本数")
 
+    # KMeans 按距离分簇，先标准化可以避免量纲较大的指标主导距离。
     model = make_pipeline(
         StandardScaler(),
         KMeans(
@@ -43,12 +44,13 @@ def train_kmeans(
             random_state=random_state,
         ),
     )
+    # fit_predict 同时完成聚类拟合和每个样本的簇标签分配。
     labels = model.fit_predict(X)
     cluster_sizes = np.bincount(labels, minlength=n_clusters)
 
     print("KMeans 簇大小:", cluster_sizes)
     print("惯性:", model[-1].inertia_)
-    # kmeans 惯性就是所有样本到自己所属簇中心的距离平方和，是衡量效果好坏的参数
+    # 惯性是样本到所属簇中心的距离平方和，可用于比较不同 k 的紧凑程度。
 
     result = {
         "labels": labels,

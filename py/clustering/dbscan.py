@@ -18,11 +18,11 @@ from sklearn.preprocessing import StandardScaler
 def train_dbscan(
     X: np.ndarray,
     *,
-    eps: float = 0.8, # 每个点的计算半径
+    eps: float = 0.8,  # 每个点的邻域半径
     min_samples: int = 5,
 ) -> tuple[object, dict[str, object]]:
     """标准化数据、训练 DBSCAN，并返回模型和聚类结果。"""
-    
+    # DBSCAN 依据密度寻找簇，不需要像 KMeans 那样预先指定簇数量。
     X = np.asarray(X)
     
     if X.ndim != 2:
@@ -32,12 +32,15 @@ def train_dbscan(
     if min_samples < 1:
         raise ValueError("min_samples 必须大于等于 1")
 
+    # eps 是标准化空间中的邻域半径，因此缩放步骤必须和模型绑定。
     model = make_pipeline(
         StandardScaler(),
         DBSCAN(eps=eps, min_samples=min_samples),
     )
+    # 标签 -1 专门表示噪声点，其余非负整数分别代表一个簇。
     labels = model.fit_predict(X)
 
+    # 统计每个标签的样本数，并单独排除噪声标签得到真实簇数。
     unique_labels, counts = np.unique(labels, return_counts=True)
     distribution = dict(zip(unique_labels.tolist(), counts.tolist()))
     n_noise = int(distribution.get(-1, 0))
