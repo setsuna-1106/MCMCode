@@ -17,6 +17,7 @@ import numpy as np
 
 
 def _validate_input(reference, comparison, direction, weights, rho):
+    # 统一输入形状，并将未提供的方向和权重替换为等权收益型指标。
     reference = np.asarray(reference, dtype=float).reshape(-1)
     comparison = np.asarray(comparison, dtype=float)
     if comparison.ndim == 1:
@@ -80,12 +81,14 @@ def grey_relation(
     reference, comparison, direction, weights = _validate_input(
         reference, comparison, direction, weights, rho
     )
+    # 参考序列和方案序列必须使用同一套指标方向与标准化规则。
     all_data = np.vstack((reference, comparison))
     if normalize:
         all_data = _minmax_normalize(all_data, direction)
     normalized_reference = all_data[0]
     normalized_comparison = all_data[1:]
 
+    # 每个方案与参考序列的指标差距越小，灰色关联系数越接近 1。
     difference = np.abs(normalized_comparison - normalized_reference)
     delta_min = difference.min()
     delta_max = difference.max()
@@ -95,6 +98,7 @@ def grey_relation(
         coefficients = (delta_min + rho * delta_max) / (
             difference + rho * delta_max
         )
+    # 按指标权重加权，得到每个方案的总体关联度并据此降序排序。
     grades = coefficients @ weights
 
     return {

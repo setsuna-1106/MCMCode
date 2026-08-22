@@ -18,6 +18,7 @@ import numpy as np
 
 
 def _evaluate(model, params):
+    # 复制参数后再交给模型，避免模型意外修改调用者的原始字典。
     value = np.asarray(model(dict(params)), dtype=float)
     if value.ndim != 0 or not np.isfinite(value):
         raise ValueError("model(params) 必须返回一个有限标量")
@@ -32,6 +33,7 @@ def local_sensitivity(model, base_params, parameter, step):
         raise ValueError("step 必须大于 0")
 
     base_value = float(base_params[parameter])
+    # 中心差分同时计算上、下扰动，通常比单边差分更稳定。
     params_plus = dict(base_params)
     params_minus = dict(base_params)
     params_plus[parameter] = base_value + step
@@ -62,6 +64,7 @@ def one_way_sensitivity(model, base_params, parameter, values):
     if values.size == 0 or not np.isfinite(values).all():
         raise ValueError("values 必须是非空有限数值序列")
 
+    # 每次只替换一个参数，其余参数保持基准值不变。
     outputs = []
     for value in values:
         params = dict(base_params)
@@ -99,6 +102,7 @@ def two_way_sensitivity(
     ):
         raise ValueError("values_x 和 values_y 必须是非空有限数值序列")
 
+    # 输出矩阵的行对应 values_x，列对应 values_y，便于直接绘制热力图。
     outputs = np.empty((values_x.size, values_y.size), dtype=float)
     for i, value_x in enumerate(values_x):
         for j, value_y in enumerate(values_y):
@@ -121,6 +125,7 @@ def monte_carlo_sensitivity(model, sampler, n_samples=1000, random_state=42):
     if n_samples < 1:
         raise ValueError("n_samples 必须大于 0")
 
+    # 固定随机种子后可复现实验；sampler 决定各参数的扰动分布。
     rng = np.random.default_rng(random_state)
     samples = []
     outputs = []
@@ -136,6 +141,7 @@ def monte_carlo_sensitivity(model, sampler, n_samples=1000, random_state=42):
         raise ValueError("sampler 返回的参数键必须保持一致")
 
     outputs = np.asarray(outputs, dtype=float)
+    # 相关系数只描述单个参数与输出的线性关系，不等同于因果影响。
     correlation = {}
     for key in keys:
         values = np.asarray([sample[key] for sample in samples], dtype=float)

@@ -16,17 +16,17 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.3, random_state=42, stratify=y
 )
 
-# 3. 建立Pipeline ：每次训练内部完成标准化，避免数据泄漏
+# 3. 建立 Pipeline：每次训练内部完成标准化，避免数据泄漏
 model = Pipeline([
     ("scaler", StandardScaler()),
     ("clf", SVC())
 ])
 
-# 4. 在训练集上交叉验证，评估模型稳定性
-cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring="accuracy") # cv-交叉验证的折数
-print(f"交叉验证准确率: {cv_scores.mean():.2%} ± {cv_scores.std():.2%}") # std 方差衡量模型的稳定性
+# 4. 只在训练集上交叉验证，观察不同折次下的稳定性。
+cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring="accuracy")
+print(f"交叉验证准确率: {cv_scores.mean():.2%} ± {cv_scores.std():.2%}")  # std 衡量稳定性
 
-# 5. 在训练集上网格调参
+# 5. 网格搜索仍只使用训练集；Pipeline 会在每个折内重新拟合 scaler。
 param_grid = {
     "clf__C": [0.1, 1, 10],
     "clf__gamma": [0.01, 0.1, 1],
@@ -37,7 +37,7 @@ search = GridSearchCV(
 search.fit(X_train, y_train)
 print("最优参数:", search.best_params_)
 
-# 6. 用最优模型测试：测试集不参与训练和调参
+# 6. 用最优模型测试：测试集此前没有参与训练、交叉验证或调参。
 best_model = search.best_estimator_
 y_pred = best_model.predict(X_test)
 print(f"测试集准确率: {accuracy_score(y_test, y_pred):.2%}")

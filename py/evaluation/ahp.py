@@ -37,6 +37,7 @@ RANDOM_INDEX = {
 
 
 def _validate_matrix(matrix, name="matrix", tolerance=1e-8):
+    # AHP 判断矩阵必须是正互反方阵，否则特征值权重没有定义基础。
     matrix = np.asarray(matrix, dtype=float)
     if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
         raise ValueError(f"{name} 必须是非空方阵")
@@ -55,6 +56,7 @@ def ahp_weights(matrix, consistency_threshold=0.1, require_consistent=False):
     """计算单个判断矩阵的权重、CI、CR 和一致性结论。"""
     matrix = _validate_matrix(matrix)
     n = matrix.shape[0]
+    # 最大特征值对应的正特征向量经归一化后作为相对权重。
     eigenvalues, eigenvectors = np.linalg.eig(matrix)
     index = int(np.argmax(eigenvalues.real))
     if abs(eigenvalues[index].imag) > 1e-7:
@@ -68,6 +70,7 @@ def ahp_weights(matrix, consistency_threshold=0.1, require_consistent=False):
         raise ValueError("无法得到全为正的特征向量")
     weights = weights / weights.sum()
 
+    # CI 衡量偏离完全一致的程度，CR 再除以同阶随机一致性指标 RI。
     ci = 0.0 if n <= 2 else max(0.0, (lambda_max - n) / (n - 1))
     ri = RANDOM_INDEX[n]
     cr = 0.0 if ri == 0 else ci / ri
@@ -92,6 +95,7 @@ def solve_ahp(
     require_consistent=False,
 ):
     """完成准则层和方案层 AHP 总排序。"""
+    # 先求准则权重，再分别求每个准则下的方案局部权重。
     criteria_result = ahp_weights(
         criteria_matrix,
         consistency_threshold=consistency_threshold,
@@ -114,6 +118,7 @@ def solve_ahp(
     if any(result["weights"].size != n_alternatives for result in alternative_results):
         raise ValueError("所有方案判断矩阵的阶数必须相同")
 
+    # 每一列是一个准则下的方案权重；乘以准则权重即可得到总排序。
     local_weights = np.column_stack(
         [result["weights"] for result in alternative_results]
     )
