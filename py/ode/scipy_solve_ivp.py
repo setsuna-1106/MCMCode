@@ -31,7 +31,26 @@ def solve_ode(
     max_step=np.inf,
     events=None,
 ):
-    """调用 solve_ivp 并返回完整的 OdeResult。"""
+    """数值求解一阶或高阶常微分方程组。
+
+    Args:
+        rhs: 右端函数，签名为 ``rhs(t, y, *args)``。
+        t_span: ``(起始时间, 终止时间)``。
+        y0: 初始状态向量。
+        t_eval: 可选的输出采样时间点。
+        args: 传给 ``rhs`` 和事件函数的额外位置参数。
+        method: SciPy 求解器名称，如 ``RK45``、``BDF`` 或 ``Radau``。
+        rtol: 相对误差容限。
+        atol: 绝对误差容限。
+        max_step: 最大积分步长。
+        events: 可选事件函数或事件函数序列。
+
+    Returns:
+        SciPy 的 ``OdeResult``，包含时间、状态、成功标志和事件结果。
+
+    Raises:
+        ValueError: 时间区间或初始状态不合法时抛出。
+    """
     t_span = np.asarray(t_span, dtype=float)
     y0 = np.asarray(y0, dtype=float)
     if t_span.shape != (2,) or not np.all(np.isfinite(t_span)):
@@ -41,6 +60,7 @@ def solve_ode(
     if y0.ndim != 1 or y0.size == 0 or not np.all(np.isfinite(y0)):
         raise ValueError("y0 必须是一维且只包含有限数值")
 
+    # solve_ivp 负责自适应选步；t_eval 只控制返回采样点，不改变积分过程。
     return solve_ivp(
         rhs,
         (t_span[0], t_span[1]),
@@ -56,12 +76,12 @@ def solve_ode(
 
 
 def logistic_rhs(t, y, growth_rate, carrying_capacity):
-    """Logistic 方程：dy/dt = r*y*(1-y/K)。"""
+    """计算 Logistic 方程右端项 ``dy/dt = r*y*(1-y/K)``。"""
     return [growth_rate * y[0] * (1.0 - y[0] / carrying_capacity)]
 
 
 def reach_target(t, y, growth_rate, carrying_capacity):
-    """当 y 达到 90% 环境容纳量时触发事件。"""
+    """返回达到环境容纳量 90% 时的事件函数值；过零即触发事件。"""
     return y[0] - 0.9 * carrying_capacity
 
 
