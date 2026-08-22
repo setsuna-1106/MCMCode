@@ -31,7 +31,15 @@ def train_xgboost_classifier(
     colsample_bytree=0.8,
     random_state=42,
 ):
-    """训练 XGBClassifier，并返回模型和测试集结果。"""
+    """训练 XGBClassifier 并返回测试集分类结果。
+
+    Args:
+        X, y: 数值特征矩阵和分类标签。
+        n_estimators, max_depth, learning_rate: 树模型主要超参数。
+
+    Returns:
+        ``(model, result)``，result 含原始类别预测、分类指标和标签编码器。
+    """
     # XGBoost 直接接收数值特征；先统一类型并检查有限性。
     X = np.asarray(X, dtype=float)
     y = np.asarray(y)

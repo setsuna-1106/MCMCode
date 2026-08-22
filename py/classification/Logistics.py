@@ -10,9 +10,15 @@ from sklearn.preprocessing import StandardScaler
 
 def fit_logistic(X, y, test_size=0.2, random_state=42, C=1.0, max_iter=1000):
     """
-    训练模型并返回模型与测试集结果。
-        X: shape 为 (样本数, 特征数) 的数值特征矩阵
-        y: shape 为 (样本数,) 的分类标签
+    训练 Logistic 回归并返回测试集结果。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        y: 一维分类标签。
+        C: L2 正则化强度的倒数。
+
+    Returns:
+        包含模型、预测值、概率、准确率、报告和混淆矩阵的字典。
     """
     # 统一为 sklearn 使用的二维特征矩阵和一维标签向量。
     X = np.asarray(X, dtype=float)

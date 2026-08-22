@@ -32,7 +32,16 @@ def train_random_forest(
     max_depth: int | None = None,  # 决策树所能达到的最大深度
     random_state: int = 42,
 ) -> tuple[RandomForestClassifier, dict[str, object]]:
-    """训练随机森林分类器并返回模型和评估结果。"""
+    """训练随机森林分类器。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        y: 一维分类标签。
+        feature_names: 可选特征名，用于输出重要性排序。
+
+    Returns:
+        ``(model, result)``，result 包含测试集预测和特征重要性。
+    """
     X = np.asarray(X)
     y = np.asarray(y)
 

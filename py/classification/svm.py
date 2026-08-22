@@ -26,7 +26,17 @@ def train_svm(
     gamma: str | float = "scale",
     random_state: int = 42,
 ) -> tuple[object, dict[str, object]]:
-    """标准化数据、训练 SVM，并返回模型和测试结果。"""
+    """标准化数据并训练 SVM 分类器。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        y: 一维分类标签。
+        kernel: SVM 核函数。
+        C: 误分类惩罚系数。
+
+    Returns:
+        ``(model, result)``，model 为含标准化步骤的 Pipeline。
+    """
     X = np.asarray(X)
     y = np.asarray(y)
 

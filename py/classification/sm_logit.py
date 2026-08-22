@@ -16,7 +16,15 @@ def fit_logit(
     random_state=42,
     threshold=0.5,
 ):
-    """Fit binary Logit and return inference and test-set metrics."""
+    """拟合二分类 Logit 模型并返回测试集指标。
+
+    Args:
+        X, y: 特征矩阵和只含 0/1 的标签。
+        threshold: 将预测概率转为类别的阈值。
+
+    Returns:
+        包含模型、概率、预测、分类指标、优势比和 LLR p 值的字典。
+    """
     # statsmodels 需要显式的数值矩阵；标签则压平成一维向量。
     X = np.asarray(X, dtype=float)
     y = np.asarray(y).reshape(-1)
@@ -60,7 +68,7 @@ def fit_logit(
 
 
 def predict_logit(result, X_new, threshold=0.5):
-    """Return probabilities and labels for new rows."""
+    """预测新样本，返回概率数组和按阈值转换的标签数组。"""
     X_new = np.asarray(X_new, dtype=float)
     if X_new.ndim == 1:
         X_new = X_new.reshape(1, -1)

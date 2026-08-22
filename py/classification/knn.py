@@ -27,7 +27,17 @@ def train_knn(
     weights: str = "uniform",  # KNN 中邻居的权重
     random_state: int = 42,  # 随机种子
 ) -> tuple[object, dict[str, object]]:
-    """标准化数据、训练 KNN，并返回模型和测试结果。"""
+    """标准化数据并训练 KNN 分类器。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        y: 一维分类标签。
+        n_neighbors: 投票时使用的邻居数。
+        weights: 邻居权重方式。
+
+    Returns:
+        ``(model, result)``，model 为含标准化步骤的 Pipeline。
+    """
     X = np.asarray(X)
     y = np.asarray(y)
 
