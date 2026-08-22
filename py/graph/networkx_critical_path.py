@@ -7,13 +7,25 @@ import networkx as nx
 
 
 def solve_critical_path(edges, duration="duration"):
-    """返回关键路径节点序列和最短项目完成时间下的最长工期。"""
+    """在有向无环图中求关键路径。
+
+    Args:
+        edges: 形如 ``(before, after, duration)`` 的活动边序列。
+        duration: 图中存储活动工期的边属性名。
+
+    Returns:
+        包含内部图对象、关键路径节点序列和项目工期的字典。
+
+    Raises:
+        ValueError: 输入图存在有向环时抛出。
+    """
     graph = nx.DiGraph()
     for before, after, time in edges:
         graph.add_edge(before, after, **{duration: time})
     if not nx.is_directed_acyclic_graph(graph):
         raise ValueError("关键路径分析需要有向无环图")
 
+    # DAG 最长路径对应必须经过的最长工期链，即关键路径。
     path = nx.dag_longest_path(graph, weight=duration)
     length = nx.dag_longest_path_length(graph, weight=duration)
     return {"graph": graph, "path": path, "length": float(length)}

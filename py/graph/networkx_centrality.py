@@ -4,7 +4,16 @@ import networkx as nx
 
 
 def analyze_centrality(graph, weight="weight"):
-    """返回度中心性、介数中心性、接近中心性和 PageRank。"""
+    """计算四种常用节点中心性指标。
+
+    Args:
+        graph: 待分析的 NetworkX 图。
+        weight: 边权属性名；不存在时按 NetworkX 的无权规则处理。
+
+    Returns:
+        以指标名称为键、以节点到数值映射为值的字典。
+    """
+    # 不同中心性衡量的“重要”含义不同，结果应结合题意解释。
     return {
         "degree": nx.degree_centrality(graph),
         "betweenness": nx.betweenness_centrality(graph, weight=weight),

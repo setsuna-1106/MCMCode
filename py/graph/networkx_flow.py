@@ -7,11 +7,21 @@ import networkx as nx
 
 
 def solve_max_flow(edges, source, sink):
-    """返回最大流值、流字典、最小割值和割的两侧节点集合。"""
+    """同时计算网络最大流和对应的最小割。
+
+    Args:
+        edges: 形如 ``(u, v, capacity)`` 的有向容量边序列。
+        source: 流的起点。
+        sink: 流的终点。
+
+    Returns:
+        包含最大流值、边流量、最小割值及割两侧节点集合的字典。
+    """
     graph = nx.DiGraph()
     for u, v, capacity in edges:
         graph.add_edge(u, v, capacity=capacity)
 
+    # 最大流值和最小割值理论上相等，可用作结果一致性检查。
     flow_value, flow_dict = nx.maximum_flow(
         graph,
         source,

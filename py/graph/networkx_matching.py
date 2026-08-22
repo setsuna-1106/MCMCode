@@ -7,11 +7,20 @@ import networkx as nx
 
 
 def solve_matching(edges, maxcardinality=True):
-    """返回匹配边集合和匹配总权重。"""
+    """求无向图的最大权匹配。
+
+    Args:
+        edges: 形如 ``(u, v, weight)`` 的无向边序列。
+        maxcardinality: 权重相同时是否优先选择边数更多的匹配。
+
+    Returns:
+        ``(matching, total_weight)``，分别为匹配边集合和总权重。
+    """
     graph = nx.Graph()
     for u, v, weight in edges:
         graph.add_edge(u, v, weight=weight)
 
+    # matching 中每个节点最多出现一次，适合表达一对一指派关系。
     matching = nx.max_weight_matching(
         graph,
         maxcardinality=maxcardinality,

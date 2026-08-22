@@ -4,9 +4,21 @@ import networkx as nx
 
 
 def solve_mst(graph, weight="weight"):
-    """返回最小生成树和树边权重总和。"""
+    """求无向图的最小生成树。
+
+    Args:
+        graph: 待连接的无向 NetworkX 图。
+        weight: 边权属性名。
+
+    Returns:
+        ``(tree, total_weight)``，分别为最小生成树和树边权重总和。
+
+    Raises:
+        ValueError: 输入图是有向图时抛出。
+    """
     if graph.is_directed():
         raise ValueError("最小生成树需要无向图")
+    # 生成树连接所有可达节点且不含环，最小化总建设成本。
     tree = nx.minimum_spanning_tree(graph, weight=weight)
     total_weight = sum(
         data.get(weight, 1.0) for _, _, data in tree.edges(data=True)

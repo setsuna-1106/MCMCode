@@ -4,7 +4,21 @@ import networkx as nx
 
 
 def solve_shortest_path(graph, source, target, weight="weight"):
-    """返回最短路径和路径长度；无路可达时由 NetworkX 抛出异常。"""
+    """求两个节点之间的加权最短路径。
+
+    Args:
+        graph: 待搜索的 NetworkX 图。
+        source: 路径起点。
+        target: 路径终点。
+        weight: 边权属性名；设为 ``None`` 时按边数计算。
+
+    Returns:
+        包含节点路径和路径长度的字典。
+
+    Raises:
+        NetworkXNoPath: 起点无法到达终点时由 NetworkX 抛出。
+    """
+    # shortest_path 和 shortest_path_length 使用同一权重规则，避免结果不一致。
     path = nx.shortest_path(graph, source, target, weight=weight)
     distance = nx.shortest_path_length(graph, source, target, weight=weight)
     return {"path": path, "distance": float(distance)}
