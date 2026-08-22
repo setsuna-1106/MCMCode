@@ -77,7 +77,19 @@ def grey_relation(
     rho=0.5,
     normalize=True,
 ):
-    """计算灰色关联系数、关联度和排序结果。"""
+    """计算灰色关联系数、关联度和方案排序。
+
+    Args:
+        reference: ``(指标数,)`` 参考序列。
+        comparison: ``(方案数, 指标数)`` 比较序列。
+        direction: 指标方向，收益型为 1、成本型为 -1。
+        weights: 指标权重；为空时使用等权。
+        rho: 分辨系数。
+        normalize: 是否先按指标方向标准化。
+
+    Returns:
+        包含标准化数据、关联系数、关联度和降序下标的字典。
+    """
     reference, comparison, direction, weights = _validate_input(
         reference, comparison, direction, weights, rho
     )

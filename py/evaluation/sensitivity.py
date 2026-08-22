@@ -26,7 +26,11 @@ def _evaluate(model, params):
 
 
 def local_sensitivity(model, base_params, parameter, step):
-    """计算一个参数的中心差分导数和弹性系数。"""
+    """计算单个参数的中心差分导数和弹性系数。
+
+    Returns:
+        包含基准值、扰动输出、导数和弹性系数的字典。
+    """
     if parameter not in base_params:
         raise KeyError(f"参数不存在: {parameter}")
     if step <= 0:
@@ -57,7 +61,11 @@ def local_sensitivity(model, base_params, parameter, step):
 
 
 def one_way_sensitivity(model, base_params, parameter, values):
-    """固定其他参数，扫描一个参数并返回参数值和模型输出。"""
+    """固定其他参数，扫描一个参数并返回输出序列。
+
+    Returns:
+        包含参数名、扫描值和输出数组的字典。
+    """
     if parameter not in base_params:
         raise KeyError(f"参数不存在: {parameter}")
     values = np.asarray(values, dtype=float).reshape(-1)
@@ -86,7 +94,11 @@ def two_way_sensitivity(
     parameter_y,
     values_y,
 ):
-    """扫描两个参数并返回形状为 (len(values_x), len(values_y)) 的输出矩阵。"""
+    """扫描两个参数并返回输出矩阵。
+
+    Returns:
+        输出形状为 ``(len(values_x), len(values_y))`` 的结果字典。
+    """
     if parameter_x not in base_params or parameter_y not in base_params:
         raise KeyError("parameter_x 或 parameter_y 不存在")
     if parameter_x == parameter_y:
@@ -121,7 +133,11 @@ def two_way_sensitivity(
 
 
 def monte_carlo_sensitivity(model, sampler, n_samples=1000, random_state=42):
-    """随机扰动参数，返回样本、输出和各参数的 Pearson 相关系数。"""
+    """随机扰动参数并计算输出与各参数的 Pearson 相关系数。
+
+    Returns:
+        包含参数样本、输出数组和相关系数的字典。
+    """
     if n_samples < 1:
         raise ValueError("n_samples 必须大于 0")
 

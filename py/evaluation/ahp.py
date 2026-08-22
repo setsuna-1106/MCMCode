@@ -53,7 +53,16 @@ def _validate_matrix(matrix, name="matrix", tolerance=1e-8):
 
 
 def ahp_weights(matrix, consistency_threshold=0.1, require_consistent=False):
-    """计算单个判断矩阵的权重、CI、CR 和一致性结论。"""
+    """计算单个判断矩阵的权重和一致性指标。
+
+    Args:
+        matrix: 正互反判断矩阵。
+        consistency_threshold: CR 一致性阈值。
+        require_consistent: 是否在未通过检验时抛出异常。
+
+    Returns:
+        包含权重、lambda_max、CI、RI、CR 和一致性结论的字典。
+    """
     matrix = _validate_matrix(matrix)
     n = matrix.shape[0]
     # 最大特征值对应的正特征向量经归一化后作为相对权重。
@@ -94,7 +103,17 @@ def solve_ahp(
     consistency_threshold=0.1,
     require_consistent=False,
 ):
-    """完成准则层和方案层 AHP 总排序。"""
+    """完成准则层和方案层 AHP 总排序。
+
+    Args:
+        criteria_matrix: 准则两两比较判断矩阵。
+        alternative_matrices: 每个准则对应的方案判断矩阵序列。
+        consistency_threshold: CR 一致性阈值。
+        require_consistent: 是否强制所有矩阵通过检验。
+
+    Returns:
+        包含局部权重、总权重、最优方案下标和一致性结果的字典。
+    """
     # 先求准则权重，再分别求每个准则下的方案局部权重。
     criteria_result = ahp_weights(
         criteria_matrix,

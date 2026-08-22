@@ -1,8 +1,16 @@
 import numpy as np
 
 def topsis(X, w, direction):
-    '''输入决策矩阵 X、权重向量 w、方向向量 direction，
-    return (C, order, D_plus, D_minus)  — 贴近度/排序/正负距离'''
+    """计算 TOPSIS 贴近度和方案排序。
+
+    Args:
+        X: ``(方案数, 指标数)`` 决策矩阵。
+        w: 指标权重向量。
+        direction: 指标方向，成本型指标取负值。
+
+    Returns:
+        ``(C, order, D_plus, D_minus)``，分别为贴近度、排序和两类距离。
+    """
     # 先按列做向量归一化，消除不同指标量纲的影响。
     Xn = X / np.sqrt((X**2).sum(axis=0))
 

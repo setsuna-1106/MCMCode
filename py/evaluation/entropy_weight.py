@@ -2,7 +2,15 @@ import numpy as np
 
 
 def entropy_weight(X, direction):
-    """返回熵权法中的指标权重。"""
+    """根据指标差异计算熵权。
+
+    Args:
+        X: ``(方案数, 指标数)`` 决策矩阵。
+        direction: 指标方向，收益型为 1、成本型为 -1。
+
+    Returns:
+        各指标权重向量。
+    """
     X = np.asarray(X, dtype=float)
     direction = np.asarray(direction, dtype=float)
     # direction=1 表示收益型，direction=-1 表示成本型。
