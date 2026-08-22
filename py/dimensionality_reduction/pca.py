@@ -8,11 +8,15 @@ from sklearn.preprocessing import StandardScaler
 
 
 def pca_analysis(X, n_components=0.9, standardize=True):
-    """执行 PCA，并返回常用结果
+    """执行 PCA 并返回降维与解释结果。
 
-    n_components 可以写成：
-    - 2：保留 2 个主成分；
-    - 0.9：保留累计贡献率达到 90% 所需的主成分。
+    Args:
+        X: ``(样本数, 指标数)`` 数据矩阵。
+        n_components: 主成分数量，或目标累计贡献率（如 ``0.9``）。
+        standardize: 是否先按列标准化。
+
+    Returns:
+        包含得分、贡献率、主轴系数、载荷、特征值和拟合对象的字典。
     """
     # 每行是样本、每列是指标；PCA 只能处理有限的数值矩阵。
     X = np.asarray(X, dtype=float)
