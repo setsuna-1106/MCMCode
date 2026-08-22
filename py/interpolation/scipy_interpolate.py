@@ -20,6 +20,7 @@ from scipy.interpolate import CubicSpline, PchipInterpolator, interp1d
 
 
 def _validate_xy(x, y):
+    """校验观测点，并返回严格递增的浮点数组。"""
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     if x.ndim != 1 or y.ndim != 1 or x.size < 2:
@@ -34,8 +35,22 @@ def _validate_xy(x, y):
 
 
 def make_interpolator(x, y, *, kind="cubic", extrapolate=False):
-    """根据观测点构造一维插值函数。"""
+    """根据观测点构造一维插值函数。
+
+    Args:
+        x: 严格递增的观测横坐标。
+        y: 与 ``x`` 等长的观测值。
+        kind: ``linear``、``cubic`` 或 ``pchip``。
+        extrapolate: 是否允许在观测区间外外推。
+
+    Returns:
+        可调用的 SciPy 插值器。
+
+    Raises:
+        ValueError: 观测点或插值方法不合法时抛出。
+    """
     x, y = _validate_xy(x, y)
+    # 区间外默认返回 NaN；只有确认外推合理时才打开该开关。
     if kind == "linear":
         fill_value = "extrapolate" if extrapolate else np.nan
         return interp1d(
@@ -54,7 +69,21 @@ def make_interpolator(x, y, *, kind="cubic", extrapolate=False):
 
 
 def interpolate_1d(x, y, x_new, *, kind="cubic", extrapolate=False):
-    """对 x_new 求插值并返回 numpy 数组。"""
+    """在查询点计算一维插值。
+
+    Args:
+        x: 严格递增的观测横坐标。
+        y: 与 ``x`` 等长的观测值。
+        x_new: 待查询的横坐标序列。
+        kind: 插值方法，传给 :func:`make_interpolator`。
+        extrapolate: 是否允许观测区间外外推。
+
+    Returns:
+        与 ``x_new`` 形状相同的 NumPy 浮点数组。
+
+    Raises:
+        ValueError: 输入包含非有限值或观测点不合法时抛出。
+    """
     x_new = np.asarray(x_new, dtype=float)
     if not np.all(np.isfinite(x_new)):
         raise ValueError("x_new 只能包含有限数值")
