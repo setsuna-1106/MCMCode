@@ -10,13 +10,23 @@ from sklearn.preprocessing import StandardScaler
 
 def fit_ridge_regression(
     X, y, alpha=1.0, test_size=0.2, random_state=42, standardize=True
-): # alpha 参数控制岭回归的限制强度，其值越大越容易出现欠拟合
+):
 
-    """训练岭回归并返回模型、预测值和常用评价指标。"""
+    """训练带 L2 正则化的岭回归。
+
+    Args:
+        X: ``(样本数, 特征数)`` 特征矩阵。
+        y: 连续型目标值。
+        alpha: 正则化强度，越大收缩越强。
+        standardize: 是否在 Pipeline 中标准化特征。
+
+    Returns:
+        包含模型、预测值、回归指标、系数、截距和 alpha 的字典。
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
-    
-    # 规范输入
+
+    # 规范输入；岭回归的 alpha 必须为正。
     if X.ndim == 1:
         X = X.reshape(-1, 1)
     if X.ndim != 2 or len(X) != len(y):
@@ -28,6 +38,7 @@ def fit_ridge_regression(
         X, y, test_size=test_size, random_state=random_state
     )
 
+    # 标准化与岭回归绑定，保证正则化作用在可比较的特征尺度上。
     model = Pipeline([
         ("scaler", StandardScaler() if standardize else "passthrough"),
         ("regressor", Ridge(alpha=alpha)),

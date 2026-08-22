@@ -21,7 +21,15 @@ def fit_ols(
     random_state=42,
     robust=False,
 ):
-    """Fit OLS and return the result, test-set metrics, and train data."""
+    """按时间无关的随机切分拟合 OLS 并返回测试集指标。
+
+    Args:
+        X, y: 特征矩阵和连续型目标值。
+        robust: 是否使用 HC3 稳健协方差。
+
+    Returns:
+        包含模型、训练/测试数据、预测值和 MAE/MSE/RMSE/R2 的字典。
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
     if X.ndim == 1:
@@ -32,6 +40,7 @@ def fit_ols(
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state
     )
+    # statsmodels 不会自动补截距列，训练和预测必须使用相同的列结构。
     X_train_sm = sm.add_constant(X_train, has_constant="add")
     X_test_sm = sm.add_constant(X_test, has_constant="add")
 
@@ -54,7 +63,7 @@ def fit_ols(
 
 
 def predict_ols(result, X_new):
-    """Predict new rows with a fitted OLS result."""
+    """使用已拟合的 OLS 结果预测新样本。"""
     X_new = np.asarray(X_new, dtype=float)
     if X_new.ndim == 1:
         X_new = X_new.reshape(1, -1)

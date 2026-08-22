@@ -30,7 +30,16 @@ def train_xgboost_regressor(
     colsample_bytree=0.8,
     random_state=42,
 ):
-    """训练 XGBRegressor，并返回模型和测试集结果。"""
+    """训练 XGBRegressor 并返回测试集回归指标。
+
+    Args:
+        X, y: 数值特征矩阵和连续型目标值。
+        n_estimators, max_depth, learning_rate: 树模型主要超参数。
+        subsample, colsample_bytree: 行和列采样比例。
+
+    Returns:
+        ``(model, result)``，result 包含预测值、回归指标和特征重要性。
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
     if X.ndim != 2 or len(X) != len(y):
@@ -45,6 +54,7 @@ def train_xgboost_regressor(
         random_state=random_state,
     )
 
+    # XGBoost 不依赖标准化；n_jobs=1 让模板在受限环境中保持稳定。
     model = XGBRegressor(
         n_estimators=n_estimators,
         max_depth=max_depth,
@@ -60,6 +70,7 @@ def train_xgboost_regressor(
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
+    # 特征重要性与输入特征列一一对应，可用于后续解释或筛选。
     mse = mean_squared_error(y_test, y_pred)
     result = {
         "mae": mean_absolute_error(y_test, y_pred),

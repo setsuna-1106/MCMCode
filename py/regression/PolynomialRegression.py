@@ -11,7 +11,17 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 def fit_polynomial_regression(
     X, y, degree=2, test_size=0.2, random_state=42, standardize=True
 ):
-    """训练多项式回归并返回模型、预测值和常用评价指标。"""
+    """训练多项式回归并返回测试集指标。
+
+    Args:
+        X: ``(样本数, 特征数)`` 特征矩阵。
+        y: 连续型目标值。
+        degree: 多项式最高次数。
+        standardize: 是否标准化展开后的特征。
+
+    Returns:
+        包含模型、预测值、回归指标、系数、截距和特征名的字典。
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
     if X.ndim == 1:
@@ -25,6 +35,7 @@ def fit_polynomial_regression(
         X, y, test_size=test_size, random_state=random_state
     )
 
+    # 多项式展开和标准化放在 Pipeline 中，避免测试集参与预处理拟合。
     model = Pipeline([
         ("poly", PolynomialFeatures(degree=degree, include_bias=False)),
         ("scaler", StandardScaler() if standardize else "passthrough"),

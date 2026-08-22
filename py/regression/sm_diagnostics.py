@@ -10,6 +10,7 @@ from statsmodels.stats.stattools import durbin_watson, jarque_bera
 
 
 def _prepare_data(X, y):
+    """校验 OLS 输入并返回 NumPy 数组。"""
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
     if X.ndim == 1:
@@ -22,7 +23,16 @@ def _prepare_data(X, y):
 
 
 def diagnose_ols(result, X, feature_names=None):
-    """Return residual, variance, autocorrelation, and VIF diagnostics."""
+    """计算 OLS 残差、异方差、自相关和多重共线性诊断。
+
+    Args:
+        result: 已拟合的 statsmodels OLS 结果。
+        X: 拟合时使用的原始特征矩阵，不含常数列。
+        feature_names: 特征名；为空时自动生成。
+
+    Returns:
+        按诊断类别组织的统计量和 p 值字典。
+    """
     X = np.asarray(X, dtype=float)
     if X.ndim == 1:
         X = X.reshape(-1, 1)
@@ -34,6 +44,7 @@ def diagnose_ols(result, X, feature_names=None):
     if len(feature_names) != X.shape[1]:
         raise ValueError("feature_names must match the number of features")
 
+    # 诊断中的 VIF 需要显式常数列，但 feature_names 只对应原始特征。
     X_sm = sm.add_constant(X, has_constant="add")
     jb_stat, jb_pvalue, skew, kurtosis = jarque_bera(result.resid)
     bp_lm, bp_lm_pvalue, bp_f, bp_f_pvalue = het_breuschpagan(
@@ -67,7 +78,16 @@ def diagnose_ols(result, X, feature_names=None):
 
 
 def fit_ols_diagnostics(X, y, feature_names=None, robust=False):
-    """Fit OLS on all observations and return the model plus diagnostics."""
+    """用全部观测拟合 OLS，并返回模型和诊断结果。
+
+    Args:
+        X, y: OLS 特征矩阵和目标值。
+        feature_names: 特征名。
+        robust: 是否使用 HC3 稳健协方差。
+
+    Returns:
+        包含拟合结果和 ``diagnose_ols`` 输出的字典。
+    """
     X, y = _prepare_data(X, y)
     X_sm = sm.add_constant(X, has_constant="add")
     model = sm.OLS(y, X_sm)

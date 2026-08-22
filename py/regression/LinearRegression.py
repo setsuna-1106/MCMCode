@@ -9,7 +9,16 @@ from sklearn.preprocessing import StandardScaler
 
 
 def fit_linear_regression(X, y, test_size=0.2, random_state=42, standardize=True):
-    """训练线性回归并返回模型、预测值和常用评价指标。"""
+    """训练线性回归并返回测试集指标。
+
+    Args:
+        X: ``(样本数, 特征数)`` 特征矩阵。
+        y: 连续型目标值。
+        standardize: 是否在 Pipeline 中标准化特征。
+
+    Returns:
+        包含模型、预测值、MAE/MSE/RMSE/R2、系数和截距的字典。
+    """
     X = np.asarray(X, dtype=float)
     y = np.asarray(y, dtype=float).reshape(-1)
     if X.ndim == 1:
@@ -21,6 +30,7 @@ def fit_linear_regression(X, y, test_size=0.2, random_state=42, standardize=True
         X, y, test_size=test_size, random_state=random_state
     )
 
+    # 标准化器只在训练集拟合；关闭时返回裸 LinearRegression 模型。
     if standardize:
         model = make_pipeline(StandardScaler(), LinearRegression())
         regressor = model.named_steps["linearregression"]
