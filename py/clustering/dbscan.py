@@ -21,7 +21,16 @@ def train_dbscan(
     eps: float = 0.8,  # 每个点的邻域半径
     min_samples: int = 5,
 ) -> tuple[object, dict[str, object]]:
-    """标准化数据、训练 DBSCAN，并返回模型和聚类结果。"""
+    """标准化数据并训练 DBSCAN。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        eps: 标准化空间中的邻域半径。
+        min_samples: 核心点邻域中的最小样本数。
+
+    Returns:
+        ``(model, result)``，result 含标签、簇分布和噪声点数量。
+    """
     # DBSCAN 依据密度寻找簇，不需要像 KMeans 那样预先指定簇数量。
     X = np.asarray(X)
     

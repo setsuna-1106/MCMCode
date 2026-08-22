@@ -24,7 +24,16 @@ def train_kmeans(
     random_state: int = 42,
     n_init: int = 10,  # KMeans 算法总运行次数，选择最优的结构
 ) -> tuple[object, dict[str, object]]:
-    """标准化数据、训练 KMeans，并返回模型和聚类结果。"""
+    """标准化数据并训练 KMeans。
+
+    Args:
+        X: ``(样本数, 特征数)`` 数值特征矩阵。
+        n_clusters: 目标簇数量。
+        n_init: 不同初始中心的运行次数。
+
+    Returns:
+        ``(model, result)``，result 含簇标签、簇大小和惯性。
+    """
     # 聚类没有监督标签，模型会直接利用全部样本寻找簇结构。
     X = np.asarray(X)
     
