@@ -22,7 +22,17 @@ def fit_arima(
     test_size=0.2,
     trend=None,
 ):
-    """Fit ARIMA in time order and return test metrics and the fitted model."""
+    """按时间顺序拟合 ARIMA 并评估测试段。
+
+    Args:
+        y: 按时间从早到晚排列的一维序列。
+        order: ``(p, d, q)`` 模型阶数。
+        test_size: 测试点数量或测试比例。
+        trend: 趋势项设置。
+
+    Returns:
+        包含模型、测试预测和 MAE/MSE/RMSE/MAPE 的字典。
+    """
     y = np.asarray(y, dtype=float)
     if y.ndim != 1 or len(y) < 8 or not np.isfinite(y).all():
         raise ValueError("y must be a 1D finite series with at least 8 values")
@@ -61,7 +71,7 @@ def fit_arima(
 
 
 def predict_arima(result, steps=1):
-    """Forecast future values from a fitted ARIMA result."""
+    """用已拟合的 ARIMA 结果预测未来 ``steps`` 期。"""
     if not isinstance(steps, (int, np.integer)) or steps < 1:
         raise ValueError("steps must be a positive integer")
     return np.asarray(result.forecast(steps=int(steps)))

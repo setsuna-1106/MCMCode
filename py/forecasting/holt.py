@@ -39,7 +39,16 @@ def fit_holt(
     damped_trend=False,
     initialization_method="estimated",
 ):
-    """拟合 Holt 二次指数平滑并返回拟合值和未来预测。"""
+    """拟合含水平项和趋势项的 Holt 模型。
+
+    Args:
+        y: 按时间排列的一维序列。
+        steps: 未来预测期数。
+        damped_trend: 是否让趋势随预测步数衰减。
+
+    Returns:
+        包含模型、历史拟合值、未来预测和方法名的字典。
+    """
     y = _validate_series(y, minimum_length=3)
     if not isinstance(steps, (int, np.integer)) or steps < 1:
         raise ValueError("steps 必须是正整数")
@@ -63,7 +72,17 @@ def fit_holt_winters(
     damped_trend=False,
     initialization_method="estimated",
 ):
-    """拟合 Holt-Winters 三次指数平滑并返回拟合值和未来预测。"""
+    """拟合含水平、趋势和季节项的 Holt-Winters 模型。
+
+    Args:
+        y: 至少包含两个完整季节周期的一维序列。
+        seasonal_periods: 季节周期长度。
+        steps: 未来预测期数。
+        trend, seasonal: 趋势项和季节项的加法或乘法形式。
+
+    Returns:
+        包含模型、历史拟合值、未来预测和方法名的字典。
+    """
     if not isinstance(seasonal_periods, (int, np.integer)) or seasonal_periods < 2:
         raise ValueError("seasonal_periods 必须是不小于 2 的整数")
     if trend not in (None, "add", "mul"):

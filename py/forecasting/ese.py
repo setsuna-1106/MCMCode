@@ -4,7 +4,16 @@ import numpy as np
 
 
 def exponential_smoothing(y, alpha=0.3, steps=3):
-    """返回历史平滑值和未来 steps 期预测。"""
+    """计算一次指数平滑及未来预测。
+
+    Args:
+        y: 按时间排列的一维序列。
+        alpha: 最新观测值的平滑权重。
+        steps: 未来预测期数。
+
+    Returns:
+        ``(level, forecast)``，分别为历史水平项和未来预测。
+    """
     # 一次指数平滑只建模水平项，不包含趋势或季节项。
     y = np.asarray(y, dtype=float)
     if y.ndim != 1 or y.size < 2 or not np.all(np.isfinite(y)):

@@ -2,7 +2,15 @@ import numpy as np
 
 
 def gm11(data, steps=1):
-    """Return (forecast, (a, b), fitted) for a GM(1,1) model."""
+    """拟合 GM(1,1) 并预测未来值。
+
+    Args:
+        data: 至少 4 个非负有限观测值。
+        steps: 未来预测期数。
+
+    Returns:
+        ``(forecast, (a, b), fitted)``，分别为预测值、模型参数和历史拟合值。
+    """
     # GM(1,1) 适合短序列趋势外推，输入要求为非负时间序列。
     x0 = np.asarray(data, dtype=float).reshape(-1)
     if len(x0) < 4:
