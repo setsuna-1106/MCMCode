@@ -21,8 +21,8 @@ def train_svm(
     y: np.ndarray,
     *,
     test_size: float = 0.2,
-    kernel: str = "rbf", # 训练核，决定结果划分的
-    C: float = 1.0, # 
+    kernel: str = "rbf",  # 训练核函数
+    C: float = 1.0,  # 误分类惩罚系数
     gamma: str | float = "scale",
     random_state: int = 42,
 ) -> tuple[object, dict[str, object]]:
@@ -35,6 +35,7 @@ def train_svm(
     if y.ndim != 1 or len(X) != len(y):
         raise ValueError("y 必须是一维标签，且样本数必须与 X 一致")
 
+    # 测试集只在训练结束后使用，评估结果才具有独立性。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -43,12 +44,14 @@ def train_svm(
         stratify=y,
     )
 
+    # SVM 对特征尺度敏感，因此把标准化和分类器放进同一个 pipeline。
     model = make_pipeline(
         StandardScaler(),
         SVC(kernel=kernel, C=C, gamma=gamma),
     )
     model.fit(X_train, y_train)
 
+    # pipeline 会先缩放测试特征，再调用 SVM 进行预测。
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     print(f"SVM 准确率: {accuracy:.2%}")

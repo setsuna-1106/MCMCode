@@ -14,11 +14,13 @@ def fit_logistic(X, y, test_size=0.2, random_state=42, C=1.0, max_iter=1000):
         X: shape 为 (样本数, 特征数) 的数值特征矩阵
         y: shape 为 (样本数,) 的分类标签
     """
+    # 统一为 sklearn 使用的二维特征矩阵和一维标签向量。
     X = np.asarray(X, dtype=float)
     y = np.asarray(y).reshape(-1)
     if X.ndim == 1:
         X = X.reshape(-1, 1)
 
+    # 先留出测试集；后续标准化器只会在训练集上拟合。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -34,6 +36,7 @@ def fit_logistic(X, y, test_size=0.2, random_state=42, C=1.0, max_iter=1000):
     )
     model.fit(X_train, y_train)
 
+    # 分类标签、类别概率和混淆矩阵都基于同一份测试集预测得到。
     y_pred = model.predict(X_test)
     classifier = model.named_steps["logisticregression"]
     return {

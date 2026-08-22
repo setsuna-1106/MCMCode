@@ -32,6 +32,7 @@ def train_xgboost_classifier(
     random_state=42,
 ):
     """训练 XGBClassifier，并返回模型和测试集结果。"""
+    # XGBoost 直接接收数值特征；先统一类型并检查有限性。
     X = np.asarray(X, dtype=float)
     y = np.asarray(y)
     if X.ndim != 2 or len(X) != len(y):
@@ -41,12 +42,14 @@ def train_xgboost_classifier(
     if y.ndim != 1:
         raise ValueError("y 必须是一维分类标签")
 
+    # 将字符串或非连续标签编码为从 0 开始的整数，训练后再还原。
     label_encoder = LabelEncoder()
     y_encoded = label_encoder.fit_transform(y)
     n_classes = len(label_encoder.classes_)
     if n_classes < 2:
         raise ValueError("y 至少需要包含 2 个类别")
 
+    # 对编码后的标签做分层切分，保持各类别在两部分中的比例。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y_encoded,
@@ -55,6 +58,7 @@ def train_xgboost_classifier(
         stratify=y_encoded,
     )
 
+    # 二分类和多分类需要不同的目标函数；n_jobs=1 便于比赛环境稳定运行。
     model_params = {
         "n_estimators": n_estimators,
         "max_depth": max_depth,
@@ -73,6 +77,7 @@ def train_xgboost_classifier(
     model = XGBClassifier(**model_params)
     model.fit(X_train, y_train)
 
+    # 评估前将预测标签还原为调用者传入的原始类别类型。
     y_pred_encoded = model.predict(X_test).astype(int)
     y_test_original = label_encoder.inverse_transform(y_test)
     y_pred_original = label_encoder.inverse_transform(y_pred_encoded)

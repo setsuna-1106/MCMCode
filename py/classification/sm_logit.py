@@ -17,6 +17,7 @@ def fit_logit(
     threshold=0.5,
 ):
     """Fit binary Logit and return inference and test-set metrics."""
+    # statsmodels 需要显式的数值矩阵；标签则压平成一维向量。
     X = np.asarray(X, dtype=float)
     y = np.asarray(y).reshape(-1)
     if X.ndim == 1:
@@ -26,6 +27,7 @@ def fit_logit(
     if not np.all(np.isin(np.unique(y), [0, 1])):
         raise ValueError("y must contain binary labels 0 and 1")
 
+    # 先切分数据，再分别添加常数列，保证测试集没有参与拟合。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -36,8 +38,10 @@ def fit_logit(
     X_train_sm = sm.add_constant(X_train, has_constant="add")
     X_test_sm = sm.add_constant(X_test, has_constant="add")
 
+    # Logit 的 params 包含截距；指数变换后可解释为优势比。
     result = sm.Logit(y_train, X_train_sm).fit(disp=False)
     y_proba = np.asarray(result.predict(X_test_sm))
+    # 将概率按题目需要的阈值转换为 0/1 分类标签。
     y_pred = (y_proba >= threshold).astype(int)
 
     return {

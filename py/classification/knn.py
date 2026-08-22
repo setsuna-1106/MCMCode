@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from sklearn.datasets import load_iris # 示例数据
+from sklearn.datasets import load_iris  # 示例数据
 
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
@@ -23,9 +23,9 @@ def train_knn(
     y: np.ndarray,
     *,
     test_size: float = 0.2,
-    n_neighbors: int = 5, # 邻近元素的数量，奇数避免平票，多分类时仍有可能出现平票
-    weights: str = "uniform", # KNN中邻居的权重
-    random_state: int = 42, # 随机种子
+    n_neighbors: int = 5,  # 邻近元素的数量，奇数避免平票，多分类时仍有可能出现平票
+    weights: str = "uniform",  # KNN 中邻居的权重
+    random_state: int = 42,  # 随机种子
 ) -> tuple[object, dict[str, object]]:
     """标准化数据、训练 KNN，并返回模型和测试结果。"""
     X = np.asarray(X)
@@ -39,7 +39,7 @@ def train_knn(
     if n_neighbors < 1:
         raise ValueError("n_neighbors 必须大于等于 1")
 
-    # 将数据分为训练集和测试集
+    # 测试集只用于最后评估，避免把待预测样本的信息带入训练过程。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -52,9 +52,10 @@ def train_knn(
     model = make_pipeline(
         StandardScaler(),
         KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights),
-    )# 使用pipeline，避免数据污染
+    )  # 使用 pipeline，保证标准化与模型训练始终绑定。
     model.fit(X_train, y_train)
 
+    # 模型内部先在缩放后的训练集上寻找邻居，再对测试集分类。
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     print(f"KNN 准确率: {accuracy:.2%}")
@@ -67,7 +68,7 @@ def train_knn(
         "y_test": y_test,
         "y_pred": y_pred,
     }
-    # 使用放回的model进行分类
+    # 返回完整 pipeline，预测新样本时会自动执行相同的标准化。
     return model, result
  
 

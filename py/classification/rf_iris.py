@@ -27,15 +27,16 @@ def train_random_forest(
     y: np.ndarray,
     feature_names: Sequence[str] | None = None,
     *,
-    test_size: float = 0.2, # 测试集所占大小
-    n_estimators: int = 100, # 随机森林中树的数量
-    max_depth: int | None = None, # 决策树所能达到的最大深度
+    test_size: float = 0.2,  # 测试集所占大小
+    n_estimators: int = 100,  # 随机森林中树的数量
+    max_depth: int | None = None,  # 决策树所能达到的最大深度
     random_state: int = 42,
 ) -> tuple[RandomForestClassifier, dict[str, object]]:
     """训练随机森林分类器并返回模型和评估结果。"""
     X = np.asarray(X)
     y = np.asarray(y)
 
+    # 先检查形状，避免训练阶段才出现难以定位的 sklearn 错误。
     if X.ndim != 2:
         raise ValueError("X 必须是二维特征矩阵，形状为 (样本数, 特征数)")
     if y.ndim != 1 or len(X) != len(y):
@@ -43,6 +44,7 @@ def train_random_forest(
     if feature_names is not None and len(feature_names) != X.shape[1]:
         raise ValueError("feature_names 的数量必须与特征数一致")
 
+    # 分层切分保证训练集和测试集中的类别比例大致一致。
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -55,10 +57,11 @@ def train_random_forest(
         n_estimators=n_estimators,
         max_depth=max_depth,
         random_state=random_state,
-        n_jobs=-1, # 训练时cpu并行数量，-1表示使用全部核心
+        n_jobs=-1,  # 训练时 CPU 并行数量，-1 表示使用全部核心
     )
     model.fit(X_train, y_train)
 
+    # 随机森林不需要标准化；这里直接用原始特征完成测试集预测。
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     importances = model.feature_importances_
@@ -67,6 +70,7 @@ def train_random_forest(
     print("\n分类报告:")
     print(classification_report(y_test, y_pred, zero_division=0))
 
+    # feature_importances_ 与原始特征列一一对应，按降序展示更便于解释。
     if feature_names is not None:
         order = np.argsort(importances)[::-1]
         print("特征重要性（从高到低）:")
