@@ -28,7 +28,24 @@ def integrate_1d(
     epsrel=1e-9,
     limit=100,
 ):
-    """计算一维定积分，返回 (积分值, scipy 误差估计)。"""
+    """计算一维定积分。
+
+    Args:
+        func: 被积函数，签名为 ``func(x, *args)``。
+        a: 积分下限，可使用 ``-np.inf``。
+        b: 积分上限，可使用 ``np.inf``。
+        args: 传给被积函数的额外位置参数。
+        points: 已知的间断点或尖点，用于提示数值积分器分段。
+        epsabs: 绝对误差容限。
+        epsrel: 相对误差容限。
+        limit: 自适应积分允许的最大子区间数。
+
+    Returns:
+        ``(value, error)``，分别为积分值和 SciPy 的误差估计。
+
+    Raises:
+        ValueError: 参数容限或积分上下限不合法时抛出。
+    """
     if np.isnan(a) or np.isnan(b):
         raise ValueError("积分上下限不能是 NaN")
     if epsabs <= 0 or epsrel <= 0:
@@ -36,6 +53,7 @@ def integrate_1d(
     if limit < 1:
         raise ValueError("limit 必须是正整数")
 
+    # points 只对有限区间有效；反常积分应通过无穷上下限直接传入。
     value, error = quad(
         func,
         a,
