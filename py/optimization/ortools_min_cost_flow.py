@@ -10,11 +10,21 @@ from ortools.graph.python import min_cost_flow
 
 
 def solve_min_cost_flow(num_nodes, arcs, supplies):
-    """求解最小费用流，返回 (model, status)。"""
+    """求解带节点供需的最小费用流。
+
+    Args:
+        num_nodes: 节点数量，节点编号为 ``0`` 到 ``num_nodes - 1``。
+        arcs: ``(tail, head, capacity, unit_cost)`` 弧序列。
+        supplies: 节点供给量；需求节点使用负数。
+
+    Returns:
+        ``(model, status)``。
+    """
     if len(supplies) != num_nodes or sum(supplies) != 0:
         raise ValueError("supplies 长度必须等于节点数且总和为 0")
 
     model = min_cost_flow.SimpleMinCostFlow()
+    # 先注册容量和单位费用，再设置每个节点的供给或需求。
     for tail, head, capacity, unit_cost in arcs:
         model.add_arc_with_capacity_and_unit_cost(tail, head, capacity, unit_cost)
     for node, supply in enumerate(supplies):

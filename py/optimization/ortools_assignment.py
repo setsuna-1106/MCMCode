@@ -11,7 +11,17 @@ from ortools.sat.python import cp_model
 
 
 def solve_assignment(cost, *, maximize=False, cost_scale=100, time_limit=10.0):
-    """求解矩阵型指派问题，返回 (model, solver, variables, status)。"""
+    """求解矩阵型指派问题。
+
+    Args:
+        cost: ``对象 x 任务`` 的成本或收益矩阵。
+        maximize: 是否将矩阵解释为收益并最大化。
+        cost_scale: 将小数放大为 CP-SAT 整数系数的倍数。
+        time_limit: 最大求解时间（秒）。
+
+    Returns:
+        ``(model, solver, variables, status)``。
+    """
     cost = np.asarray(cost, dtype=float)
     if cost.ndim != 2 or cost.size == 0 or not np.isfinite(cost).all():
         raise ValueError("cost 必须是非空二维有限数值数组")
@@ -19,6 +29,7 @@ def solve_assignment(cost, *, maximize=False, cost_scale=100, time_limit=10.0):
         raise ValueError("cost_scale 必须是正整数")
 
     n_objects, n_tasks = cost.shape
+    # CP-SAT 只接受整数目标；放大后四舍五入以保留小数成本的相对关系。
     integer_cost = np.rint(cost * int(cost_scale)).astype(np.int64)
     model = cp_model.CpModel()
     variables = [
@@ -26,6 +37,7 @@ def solve_assignment(cost, *, maximize=False, cost_scale=100, time_limit=10.0):
         for i in range(n_objects)
     ]
 
+    # 每个对象恰好分配一次，每个任务最多接收一个对象。
     for row in variables:
         model.AddExactlyOne(row)
     for j in range(n_tasks):

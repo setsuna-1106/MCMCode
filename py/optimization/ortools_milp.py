@@ -57,7 +57,19 @@ def solve_milp(
     maximize=True,
     solver_name="CBC_MIXED_INTEGER_PROGRAMMING",
 ):
-    """求解混合整数线性规划，返回 (solver, variables, status)。"""
+    """求解混合整数线性规划。
+
+    Args:
+        objective: 目标函数系数向量。
+        A_ub, b_ub: 不等式约束 ``A_ub @ x <= b_ub``。
+        A_eq, b_eq: 等式约束 ``A_eq @ x == b_eq``。
+        bounds: 每个变量的 ``(lower, upper)`` 边界。
+        categories: ``C``、``I``、``B`` 分别表示连续、整数、二进制变量。
+        maximize: 是否最大化目标函数。
+
+    Returns:
+        ``(solver, variables, status)``。
+    """
     objective = np.asarray(objective, dtype=float)
     if objective.ndim != 1 or objective.size == 0 or not np.isfinite(objective).all():
         raise ValueError("objective 必须是一维且只包含有限数值")
@@ -81,6 +93,7 @@ def solve_milp(
     if solver is None:
         raise RuntimeError(f"无法创建 OR-Tools 求解器: {solver_name}")
 
+    # 按 categories 创建不同类型变量；B 类型由 OR-Tools 直接限制为 0/1。
     variables = []
     for i, ((lower, upper), category) in enumerate(zip(bounds, categories)):
         category = str(category).upper()
@@ -97,6 +110,7 @@ def solve_milp(
         else:
             raise ValueError(f"未知变量类型: {category}")
 
+    # 约束矩阵的每一行对应一个线性约束。
     if A_ub is not None:
         for i, row in enumerate(A_ub):
             expression = solver.Sum(row[j] * variables[j] for j in range(n_variables))

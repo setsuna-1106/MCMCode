@@ -61,7 +61,19 @@ def solve_lp(
     maximize=True,
     solver_name="GLOP",
 ):
-    """求解连续线性规划，返回 (solver, variables, status)。"""
+    """求解连续线性规划。
+
+    Args:
+        objective: 目标函数系数向量。
+        A_ub, b_ub: 不等式约束 ``A_ub @ x <= b_ub``。
+        A_eq, b_eq: 等式约束 ``A_eq @ x == b_eq``。
+        bounds: 每个变量的 ``(lower, upper)`` 边界。
+        maximize: 是否最大化目标函数。
+        solver_name: OR-Tools 求解器名称。
+
+    Returns:
+        ``(solver, variables, status)``。
+    """
     objective = np.asarray(objective, dtype=float)
     if objective.ndim != 1 or objective.size == 0 or not np.isfinite(objective).all():
         raise ValueError("objective 必须是一维且只包含有限数值")
@@ -87,6 +99,7 @@ def solve_lp(
         upper = solver.infinity() if upper is None else upper
         variables.append(solver.NumVar(lower, upper, f"x_{i + 1}"))
 
+    # 矩阵约束逐行转换为 OR-Tools 的线性表达式。
     if A_ub is not None:
         for i, row in enumerate(A_ub):
             expression = solver.Sum(row[j] * variables[j] for j in range(n_variables))
@@ -97,6 +110,7 @@ def solve_lp(
             solver.Add(expression == b_eq[i])
 
     expression = solver.Sum(objective[i] * variables[i] for i in range(n_variables))
+    # 同一套接口通过 maximize 切换目标方向。
     solver.Maximize(expression) if maximize else solver.Minimize(expression)
     status = solver.Solve()
     return solver, variables, status

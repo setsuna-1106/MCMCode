@@ -31,7 +31,18 @@ def solve_linprog(
     method="highs",
     options=None,
 ):
-    """求解线性规划并返回完整的 OptimizeResult。"""
+    """求解线性规划并返回 SciPy 的 ``OptimizeResult``。
+
+    Args:
+        c: SciPy 形式的最小化目标系数；最大化收益时传入 ``-profit``。
+        A_ub, b_ub: ``A_ub @ x <= b_ub`` 约束。
+        A_eq, b_eq: ``A_eq @ x == b_eq`` 约束。
+        bounds: 每个变量的上下界。
+        method: SciPy 求解方法。
+
+    Returns:
+        完整的 ``OptimizeResult``，最优值在 ``result.fun``。
+    """
     c = np.asarray(c, dtype=float)
     if c.ndim != 1 or c.size == 0 or not np.all(np.isfinite(c)):
         raise ValueError("c 必须是一维且只包含有限数值")
@@ -45,6 +56,7 @@ def solve_linprog(
     if b_eq is not None:
         b_eq = np.asarray(b_eq, dtype=float)
 
+    # linprog 固定求最小值，因此收益最大化问题要在调用前取负号。
     return linprog(
         c,
         A_ub=A_ub,

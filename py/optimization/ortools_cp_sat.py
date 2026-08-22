@@ -11,7 +11,17 @@ from ortools.sat.python import cp_model
 
 
 def solve_schedule(durations, precedences=(), horizon=None, time_limit=10.0):
-    """最小化单机器任务总工期，返回 (model, solver, starts, ends, status)。"""
+    """求解单机器排程并最小化总工期。
+
+    Args:
+        durations: 每个任务的正整数工时。
+        precedences: ``(before, after)`` 先后约束序列。
+        horizon: 时间上界；为空时使用工时总和。
+        time_limit: 最大求解时间（秒）。
+
+    Returns:
+        ``(model, solver, starts, ends, status)``。
+    """
     durations = np.asarray(durations, dtype=int).reshape(-1)
     if durations.size == 0 or np.any(durations <= 0):
         raise ValueError("durations 必须包含正整数")
@@ -31,6 +41,7 @@ def solve_schedule(durations, precedences=(), horizon=None, time_limit=10.0):
         model.NewIntVar(int(durations[i]), horizon, f"end_{i}")
         for i in range(n_tasks)
     ]
+    # 区间变量把开始、持续时间和结束时间绑定起来。
     intervals = [
         model.NewIntervalVar(starts[i], int(durations[i]), ends[i], f"task_{i}")
         for i in range(n_tasks)
@@ -42,6 +53,7 @@ def solve_schedule(durations, precedences=(), horizon=None, time_limit=10.0):
             raise ValueError("precedences 中的任务编号超出范围")
         model.Add(ends[before] <= starts[after])
 
+    # makespan 是所有任务结束时间的最大值，即项目总工期。
     makespan = model.NewIntVar(0, horizon, "makespan")
     model.AddMaxEquality(makespan, ends)
     model.Minimize(makespan)

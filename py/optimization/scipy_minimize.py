@@ -15,7 +15,7 @@ from scipy.optimize import minimize
 
 
 def objective(x):
-    """目标函数：min f(x)。把这里替换成题目中的目标函数。"""
+    """示例目标函数；比赛时替换为题目中的 ``f(x)``。"""
     x1, x2 = x
     return (x1 - 2.0) ** 2 + (x2 - 3.0) ** 2
 
@@ -29,11 +29,23 @@ def solve_minimize(
     method="SLSQP",
     options=None,
 ):
-    """调用 scipy.optimize.minimize 并返回完整的 OptimizeResult。"""
+    """求解连续优化问题并返回 SciPy 的 ``OptimizeResult``。
+
+    Args:
+        objective: 待最小化的目标函数。
+        x0: 初始解向量。
+        bounds: 每个变量的上下界。
+        constraints: SciPy 约束字典或约束序列。
+        method: SciPy 求解方法。
+
+    Returns:
+        完整的 ``OptimizeResult``。
+    """
     x0 = np.asarray(x0, dtype=float)
     if x0.ndim != 1 or x0.size == 0 or not np.all(np.isfinite(x0)):
         raise ValueError("x0 必须是一维且只包含有限数值")
 
+    # 不等式约束需按 SciPy 约定写成 g(x) >= 0。
     return minimize(
         objective,
         x0,

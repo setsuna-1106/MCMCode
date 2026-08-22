@@ -56,7 +56,19 @@ def solve_lp(
     problem_name="linear_programming",
     solver=None,
 ):
-    """求解连续线性规划，返回 (PuLP 模型, 变量列表)。"""
+    """构造并求解连续线性规划。
+
+    Args:
+        objective: 目标函数系数向量。
+        A_ub, b_ub: 不等式约束 ``A_ub @ x <= b_ub``。
+        A_eq, b_eq: 等式约束 ``A_eq @ x == b_eq``。
+        bounds: 每个变量的上下界。
+        names: 变量名；为空时自动生成。
+        sense: ``pulp.LpMaximize`` 或 ``pulp.LpMinimize``。
+
+    Returns:
+        ``(model, variables)``，模型状态见 ``model.status``。
+    """
     objective = np.asarray(objective, dtype=float).reshape(-1)
     if objective.size == 0 or not np.isfinite(objective).all():
         raise ValueError("objective 必须是一维且只包含有限数值")
@@ -78,6 +90,7 @@ def solve_lp(
         raise ValueError("names 的长度必须与变量数一致")
 
     model = pulp.LpProblem(problem_name, sense)
+    # 先建立变量和目标，再按矩阵的行逐条加入约束。
     variables = [
         pulp.LpVariable(
             names[i],

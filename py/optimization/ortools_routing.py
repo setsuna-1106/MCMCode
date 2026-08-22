@@ -11,7 +11,16 @@ from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 
 def solve_tsp(distance_matrix, depot=0, time_limit=5):
-    """求解单车辆 TSP，返回 (route, objective_value)。"""
+    """求解单车辆旅行商问题。
+
+    Args:
+        distance_matrix: 节点间非负整数距离矩阵。
+        depot: 起点和终点仓库编号。
+        time_limit: 最大搜索时间（秒）。
+
+    Returns:
+        ``(route, objective_value)``，路线首尾均为 depot。
+    """
     distance_matrix = np.asarray(distance_matrix, dtype=int)
     if (
         distance_matrix.ndim != 2
@@ -27,6 +36,7 @@ def solve_tsp(distance_matrix, depot=0, time_limit=5):
     manager = pywrapcp.RoutingIndexManager(n_nodes, 1, depot)
     routing = pywrapcp.RoutingModel(manager)
 
+    # RoutingModel 使用内部索引，回调中需转换回距离矩阵的节点编号。
     def distance_callback(from_index, to_index):
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
@@ -44,6 +54,7 @@ def solve_tsp(distance_matrix, depot=0, time_limit=5):
     if solution is None:
         raise RuntimeError("TSP 没有找到可行路线")
 
+    # 沿求解器给出的 NextVar 链回收路线，并补上回到 depot 的终点。
     route = []
     index = routing.Start(0)
     while not routing.IsEnd(index):
