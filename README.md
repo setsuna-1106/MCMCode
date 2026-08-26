@@ -80,7 +80,7 @@ MCMCode/
 │   ├── [clustering/](docs/clustering.md)              # 聚类模型
 │   ├── [dimensionality_reduction/](docs/dimensionality_reduction.md) # PCA 降维模型
 │   ├── [regression/](docs/regression.md)              # 回归模型和任意函数拟合
-│   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
+│   ├── [optimization/](docs/optimization.md)            # 优化模型（SciPy、PuLP、OR-Tools）
 │   ├── [ode/](docs/ode.md)                     # 常微分方程数值求解
 │   ├── [interpolation/](docs/interpolation.md)           # 插值模型
 │   ├── [integration/](docs/integration.md)             # 数值积分计算
@@ -131,16 +131,16 @@ MCMCode/
 | [`py/regression/RidgeRegression.py`](docs/regression.md) | 回归 | 带 L2 正则化的岭回归 |
 | [`py/regression/scipy_curve_fit.py`](docs/regression.md) | 回归 | scipy 任意函数拟合与参数评估 |
 | [`py/regression/xgboost_regression.py`](docs/regression.md) | 回归 | XGBoost 回归、评估和特征重要性 |
-| `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
-| `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
-| `py/optimization/pulp_lp.py` | 优化 | PuLP 连续线性规划、资源约束和变量边界 |
-| `py/optimization/pulp_milp.py` | 优化 | PuLP 混合整数线性规划、整数变量和 0-1 变量 |
-| `py/optimization/ortools_lp.py` | 优化 | OR-Tools GLOP 连续线性规划 |
-| `py/optimization/ortools_milp.py` | 优化 | OR-Tools CBC 混合整数线性规划 |
-| `py/optimization/ortools_cp_sat.py` | 优化 | OR-Tools CP-SAT 单机器排程和先后约束 |
-| `py/optimization/ortools_assignment.py` | 优化 | OR-Tools CP-SAT 指派问题 |
-| `py/optimization/ortools_min_cost_flow.py` | 优化 | OR-Tools 最小费用流和运输网络 |
-| `py/optimization/ortools_routing.py` | 优化 | OR-Tools RoutingModel 单车辆 TSP |
+| [`py/optimization/scipy_linprog.py`](docs/optimization.md) | 优化 | scipy 线性规划、资源约束和变量边界 |
+| [`py/optimization/scipy_minimize.py`](docs/optimization.md) | 优化 | scipy 连续优化、变量边界和非线性约束 |
+| [`py/optimization/pulp_lp.py`](docs/optimization.md) | 优化 | PuLP 连续线性规划、资源约束和变量边界 |
+| [`py/optimization/pulp_milp.py`](docs/optimization.md) | 优化 | PuLP 混合整数线性规划、整数变量和 0-1 变量 |
+| [`py/optimization/ortools_lp.py`](docs/optimization.md) | 优化 | OR-Tools GLOP 连续线性规划 |
+| [`py/optimization/ortools_milp.py`](docs/optimization.md) | 优化 | OR-Tools CBC 混合整数线性规划 |
+| [`py/optimization/ortools_cp_sat.py`](docs/optimization.md) | 优化 | OR-Tools CP-SAT 单机器排程和先后约束 |
+| [`py/optimization/ortools_assignment.py`](docs/optimization.md) | 优化 | OR-Tools CP-SAT 指派问题 |
+| [`py/optimization/ortools_min_cost_flow.py`](docs/optimization.md) | 优化 | OR-Tools 最小费用流和运输网络 |
+| [`py/optimization/ortools_routing.py`](docs/optimization.md) | 优化 | OR-Tools RoutingModel 单车辆 TSP |
 | [`py/ode/scipy_solve_ivp.py`](docs/ode.md) | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | [`py/interpolation/scipy_interpolate.py`](docs/interpolation.md) | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 | [`py/integration/scipy_integrate.py`](docs/integration.md) | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
