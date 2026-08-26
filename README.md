@@ -74,7 +74,7 @@ MCMCode/
 ├── py/                          # Python 模板包
 │   ├── [preprocessing/](docs/preprocessing.md)           # 数据清洗
 │   ├── [evaluation/](docs/evaluation.md)              # 熵权、TOPSIS 和模型评估
-│   ├── graph/                   # 图论和网络分析
+│   ├── [graph/](docs/graph.md)                   # 图论和网络分析
 │   ├── [forecasting/](docs/forecasting.md)             # GM(1,1)、指数平滑和 ARIMA
 │   ├── [classification/](docs/classification.md)          # 分类模型
 │   ├── [clustering/](docs/clustering.md)              # 聚类模型
@@ -108,13 +108,13 @@ MCMCode/
 | [`py/evaluation/sensitivity.py`](docs/evaluation.md) | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
 | [`py/evaluation/ahp.py`](docs/evaluation.md) | 评价方法 | AHP 权重、层次总排序和一致性检验 |
 | [`py/evaluation/gra.py`](docs/evaluation.md) | 评价方法 | 灰色关联度、指标方向和加权排序 |
-| `py/graph/networkx_basics.py` | 图论 | 建图、遍历和连通性分析 |
-| `py/graph/networkx_shortest_path.py` | 图论 | 加权最短路径 |
-| `py/graph/networkx_mst.py` | 图论 | 最小生成树和网络建设成本 |
-| `py/graph/networkx_flow.py` | 图论 | 最大流和最小割 |
-| `py/graph/networkx_matching.py` | 图论 | 最大权匹配和指派关系 |
-| `py/graph/networkx_critical_path.py` | 图论 | DAG 关键路径和项目工期 |
-| `py/graph/networkx_centrality.py` | 图论 | 度、介数、接近中心性和 PageRank |
+| [`py/graph/networkx_basics.py`](docs/graph.md) | 图论 | 建图、遍历和连通性分析 |
+| [`py/graph/networkx_shortest_path.py`](docs/graph.md) | 图论 | 加权最短路径 |
+| [`py/graph/networkx_mst.py`](docs/graph.md) | 图论 | 最小生成树和网络建设成本 |
+| [`py/graph/networkx_flow.py`](docs/graph.md) | 图论 | 最大流和最小割 |
+| [`py/graph/networkx_matching.py`](docs/graph.md) | 图论 | 最大权匹配和指派关系 |
+| [`py/graph/networkx_critical_path.py`](docs/graph.md) | 图论 | DAG 关键路径和项目工期 |
+| [`py/graph/networkx_centrality.py`](docs/graph.md) | 图论 | 度、介数、接近中心性和 PageRank |
 | [`py/regression/sm_ols.py`](docs/regression.md) | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | [`py/regression/sm_diagnostics.py`](docs/regression.md) | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | [`py/classification/sm_logit.py`](docs/classification.md) | 统计建模 | Logit 二分类、优势比和分类评估 |
