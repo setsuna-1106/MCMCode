@@ -76,7 +76,7 @@ MCMCode/
 │   ├── evaluation/              # 熵权、TOPSIS 和模型评估
 │   ├── graph/                   # 图论和网络分析
 │   ├── [forecasting/](docs/forecasting.md)             # GM(1,1)、指数平滑和 ARIMA
-│   ├── classification/          # 分类模型
+│   ├── [classification/](docs/classification.md)          # 分类模型
 │   ├── [clustering/](docs/clustering.md)              # 聚类模型
 │   ├── [dimensionality_reduction/](docs/dimensionality_reduction.md) # PCA 降维模型
 │   ├── regression/              # 回归模型和任意函数拟合
@@ -117,13 +117,13 @@ MCMCode/
 | `py/graph/networkx_centrality.py` | 图论 | 度、介数、接近中心性和 PageRank |
 | `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
-| `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
+| [`py/classification/sm_logit.py`](docs/classification.md) | 统计建模 | Logit 二分类、优势比和分类评估 |
 | [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、卡方和单因素 ANOVA |
-| `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
-| `py/classification/svm.py` | 分类 | 标准化 + SVM 分类 |
-| `py/classification/xgboost_classification.py` | 分类 | XGBoost 分类、评估和特征重要性 |
-| `py/classification/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
-| `py/classification/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
+| [`py/classification/knn.py`](docs/classification.md) | 分类 | 标准化 + KNN 分类 |
+| [`py/classification/svm.py`](docs/classification.md) | 分类 | 标准化 + SVM 分类 |
+| [`py/classification/xgboost_classification.py`](docs/classification.md) | 分类 | XGBoost 分类、评估和特征重要性 |
+| [`py/classification/Logistics.py`](docs/classification.md) | 分类 | 标准化 + Logistic 回归分类 |
+| [`py/classification/rf_iris.py`](docs/classification.md) | 分类 | 随机森林分类与特征重要性 |
 | [`py/clustering/kmeans.py`](docs/clustering.md) | 聚类 | 标准化 + KMeans 聚类 |
 | [`py/clustering/dbscan.py`](docs/clustering.md) | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
 | `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
