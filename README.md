@@ -78,7 +78,7 @@ MCMCode/
 │   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
 │   ├── classification/          # 分类模型
 │   ├── [clustering/](docs/clustering.md)              # 聚类模型
-│   ├── dimensionality_reduction/ # PCA 降维模型
+│   ├── [dimensionality_reduction/](docs/dimensionality_reduction.md) # PCA 降维模型
 │   ├── regression/              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
 │   ├── [ode/](docs/ode.md)                     # 常微分方程数值求解
@@ -103,7 +103,7 @@ MCMCode/
 | `py/forecasting/ese.py` | 预测 | 使用一次指数平滑进行短期预测 |
 | `py/forecasting/holt.py` | 预测 | Holt 二次指数平滑和 Holt-Winters 三次指数平滑 |
 | `py/forecasting/arima.py` | 预测 | statsmodels ARIMA 评估和未来预测 |
-| `py/dimensionality_reduction/pca.py` | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
+| [`py/dimensionality_reduction/pca.py`](docs/dimensionality_reduction.md) | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
 | `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
 | `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
 | `py/evaluation/ahp.py` | 评价方法 | AHP 权重、层次总排序和一致性检验 |
