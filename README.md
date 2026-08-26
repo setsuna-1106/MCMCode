@@ -84,7 +84,7 @@ MCMCode/
 │   ├── ode/                     # 常微分方程数值求解
 │   ├── interpolation/           # 插值模型
 │   ├── integration/             # 数值积分计算
-│   └── statistics/              # 统计假设检验
+│   └── [statistics/](docs/statistics.md)              # 统计假设检验
 ├── requirements.txt             # Python 依赖
 └── README.md
 ```
@@ -118,7 +118,7 @@ MCMCode/
 | `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | `py/classification/sm_logit.py` | 统计建模 | Logit 二分类、优势比和分类评估 |
-| `py/statistics/sm_tests.py` | 统计检验 | Welch t、卡方和单因素 ANOVA |
+| [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、卡方和单因素 ANOVA |
 | `py/classification/knn.py` | 分类 | 标准化 + KNN 分类 |
 | `py/classification/svm.py` | 分类 | 标准化 + SVM 分类 |
 | `py/classification/xgboost_classification.py` | 分类 | XGBoost 分类、评估和特征重要性 |
