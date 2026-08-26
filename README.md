@@ -70,8 +70,9 @@ python3 -m venv .venv
 ```text
 MCMCode/
 ├── cpp/                         # C++ 代码目录
+├── docs/                        # 各模块的原理与用法文档
 ├── py/                          # Python 模板包
-│   ├── preprocessing/           # 数据清洗
+│   ├── [preprocessing/](docs/preprocessing.md)           # 数据清洗
 │   ├── evaluation/              # 熵权、TOPSIS 和模型评估
 │   ├── graph/                   # 图论和网络分析
 │   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
@@ -95,7 +96,7 @@ MCMCode/
 
 | 文件 | 类型 | 主要用途 |
 | --- | --- | --- |
-| `py/preprocessing/data_clean.py` | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
+| [`py/preprocessing/data_clean.py`](docs/preprocessing.md) | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
 | `py/evaluation/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
 | `py/evaluation/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | `py/forecasting/gm11.py` | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
