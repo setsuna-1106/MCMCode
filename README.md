@@ -73,7 +73,7 @@ MCMCode/
 ├── docs/                        # 各模块的原理与用法文档
 ├── py/                          # Python 模板包
 │   ├── [preprocessing/](docs/preprocessing.md)           # 数据清洗
-│   ├── evaluation/              # 熵权、TOPSIS 和模型评估
+│   ├── [evaluation/](docs/evaluation.md)              # 熵权、TOPSIS 和模型评估
 │   ├── graph/                   # 图论和网络分析
 │   ├── [forecasting/](docs/forecasting.md)             # GM(1,1)、指数平滑和 ARIMA
 │   ├── [classification/](docs/classification.md)          # 分类模型
@@ -97,17 +97,17 @@ MCMCode/
 | 文件 | 类型 | 主要用途 |
 | --- | --- | --- |
 | [`py/preprocessing/data_clean.py`](docs/preprocessing.md) | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
-| `py/evaluation/entropy_weight.py` | 评价方法 | 极差标准化后计算熵权 |
-| `py/evaluation/topsis.py` | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
+| [`py/evaluation/entropy_weight.py`](docs/evaluation.md) | 评价方法 | 极差标准化后计算熵权 |
+| [`py/evaluation/topsis.py`](docs/evaluation.md) | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | [`py/forecasting/gm11.py`](docs/forecasting.md) | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
 | [`py/forecasting/ese.py`](docs/forecasting.md) | 预测 | 使用一次指数平滑进行短期预测 |
 | [`py/forecasting/holt.py`](docs/forecasting.md) | 预测 | Holt 二次指数平滑和 Holt-Winters 三次指数平滑 |
 | [`py/forecasting/arima.py`](docs/forecasting.md) | 预测 | statsmodels ARIMA 评估和未来预测 |
 | [`py/dimensionality_reduction/pca.py`](docs/dimensionality_reduction.md) | 降维 | PCA 主成分、贡献率、累计贡献率和载荷分析 |
-| `py/evaluation/evaluate.py` | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
-| `py/evaluation/sensitivity.py` | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
-| `py/evaluation/ahp.py` | 评价方法 | AHP 权重、层次总排序和一致性检验 |
-| `py/evaluation/gra.py` | 评价方法 | 灰色关联度、指标方向和加权排序 |
+| [`py/evaluation/evaluate.py`](docs/evaluation.md) | 模型评估 | 以 SVM 为例，演示交叉验证、网格调参和测试集评估 |
+| [`py/evaluation/sensitivity.py`](docs/evaluation.md) | 灵敏度分析 | 局部、一因素、双因素和 Monte Carlo 参数扰动 |
+| [`py/evaluation/ahp.py`](docs/evaluation.md) | 评价方法 | AHP 权重、层次总排序和一致性检验 |
+| [`py/evaluation/gra.py`](docs/evaluation.md) | 评价方法 | 灰色关联度、指标方向和加权排序 |
 | `py/graph/networkx_basics.py` | 图论 | 建图、遍历和连通性分析 |
 | `py/graph/networkx_shortest_path.py` | 图论 | 加权最短路径 |
 | `py/graph/networkx_mst.py` | 图论 | 最小生成树和网络建设成本 |
