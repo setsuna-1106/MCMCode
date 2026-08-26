@@ -79,7 +79,7 @@ MCMCode/
 │   ├── [classification/](docs/classification.md)          # 分类模型
 │   ├── [clustering/](docs/clustering.md)              # 聚类模型
 │   ├── [dimensionality_reduction/](docs/dimensionality_reduction.md) # PCA 降维模型
-│   ├── regression/              # 回归模型和任意函数拟合
+│   ├── [regression/](docs/regression.md)              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
 │   ├── [ode/](docs/ode.md)                     # 常微分方程数值求解
 │   ├── [interpolation/](docs/interpolation.md)           # 插值模型
@@ -115,8 +115,8 @@ MCMCode/
 | `py/graph/networkx_matching.py` | 图论 | 最大权匹配和指派关系 |
 | `py/graph/networkx_critical_path.py` | 图论 | DAG 关键路径和项目工期 |
 | `py/graph/networkx_centrality.py` | 图论 | 度、介数、接近中心性和 PageRank |
-| `py/regression/sm_ols.py` | 统计建模 | OLS 回归、测试集指标和回归诊断 |
-| `py/regression/sm_diagnostics.py` | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
+| [`py/regression/sm_ols.py`](docs/regression.md) | 统计建模 | OLS 回归、测试集指标和回归诊断 |
+| [`py/regression/sm_diagnostics.py`](docs/regression.md) | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | [`py/classification/sm_logit.py`](docs/classification.md) | 统计建模 | Logit 二分类、优势比和分类评估 |
 | [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、卡方和单因素 ANOVA |
 | [`py/classification/knn.py`](docs/classification.md) | 分类 | 标准化 + KNN 分类 |
@@ -126,11 +126,11 @@ MCMCode/
 | [`py/classification/rf_iris.py`](docs/classification.md) | 分类 | 随机森林分类与特征重要性 |
 | [`py/clustering/kmeans.py`](docs/clustering.md) | 聚类 | 标准化 + KMeans 聚类 |
 | [`py/clustering/dbscan.py`](docs/clustering.md) | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
-| `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
-| `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
-| `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
-| `py/regression/scipy_curve_fit.py` | 回归 | scipy 任意函数拟合与参数评估 |
-| `py/regression/xgboost_regression.py` | 回归 | XGBoost 回归、评估和特征重要性 |
+| [`py/regression/LinearRegression.py`](docs/regression.md) | 回归 | 线性回归与常用回归指标 |
+| [`py/regression/PolynomialRegression.py`](docs/regression.md) | 回归 | 多项式回归与多项式特征 |
+| [`py/regression/RidgeRegression.py`](docs/regression.md) | 回归 | 带 L2 正则化的岭回归 |
+| [`py/regression/scipy_curve_fit.py`](docs/regression.md) | 回归 | scipy 任意函数拟合与参数评估 |
+| [`py/regression/xgboost_regression.py`](docs/regression.md) | 回归 | XGBoost 回归、评估和特征重要性 |
 | `py/optimization/scipy_linprog.py` | 优化 | scipy 线性规划、资源约束和变量边界 |
 | `py/optimization/scipy_minimize.py` | 优化 | scipy 连续优化、变量边界和非线性约束 |
 | `py/optimization/pulp_lp.py` | 优化 | PuLP 连续线性规划、资源约束和变量边界 |
