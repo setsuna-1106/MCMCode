@@ -81,7 +81,7 @@ MCMCode/
 │   ├── dimensionality_reduction/ # PCA 降维模型
 │   ├── regression/              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
-│   ├── ode/                     # 常微分方程数值求解
+│   ├── [ode/](docs/ode.md)                     # 常微分方程数值求解
 │   ├── [interpolation/](docs/interpolation.md)           # 插值模型
 │   ├── [integration/](docs/integration.md)             # 数值积分计算
 │   └── [statistics/](docs/statistics.md)              # 统计假设检验
@@ -141,7 +141,7 @@ MCMCode/
 | `py/optimization/ortools_assignment.py` | 优化 | OR-Tools CP-SAT 指派问题 |
 | `py/optimization/ortools_min_cost_flow.py` | 优化 | OR-Tools 最小费用流和运输网络 |
 | `py/optimization/ortools_routing.py` | 优化 | OR-Tools RoutingModel 单车辆 TSP |
-| `py/ode/scipy_solve_ivp.py` | 微分方程 | scipy 常微分方程数值积分和事件检测 |
+| [`py/ode/scipy_solve_ivp.py`](docs/ode.md) | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | [`py/interpolation/scipy_interpolate.py`](docs/interpolation.md) | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 | [`py/integration/scipy_integrate.py`](docs/integration.md) | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
 
