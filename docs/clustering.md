@@ -1,0 +1,74 @@
+# 聚类（clustering）
+
+无监督地把样本划分成若干组：只有特征矩阵 `X`（形状 `(样本数, 特征数)`），没有标签。对应 `py/clustering/`，提供 KMeans 和 DBSCAN 两个模板。两者都把 `StandardScaler` 放进 Pipeline——距离类算法对量纲敏感，不标准化会让数值大的指标主导结果。
+
+## KMeans
+
+### 原理
+
+预先指定簇数 $k$，交替执行「分配」与「更新」两步，最小化**惯性**（各样本到其簇中心的距离平方和）：
+
+$$\min_{\{c_i\},\ \{\mu_j\}} \sum_{i=1}^{n} \left\| x_i - \mu_{c_i} \right\|^2$$
+
+1. **分配**：每个样本划入距离最近的中心 $\mu_j$ 所在簇；
+2. **更新**：每个中心移动到本簇样本的均值位置。
+
+反复迭代直至分配不再变化。`n_init=10` 表示用不同初始中心跑 10 次取惯性最小的一次，缓解初始位置不好导致的局部最优。
+
+### 用法
+
+```python
+from py.clustering.kmeans import train_kmeans
+
+model, result = train_kmeans(X, n_clusters=3)
+print(result["labels"])          # 每个样本的簇标签
+print(result["cluster_sizes"])   # 每簇样本数
+print(result["inertia"])         # 惯性，用于比较不同 k
+predictions = model.predict(X_new)
+```
+
+关键参数：`n_clusters`（簇数，需预先指定）、`n_init`（重复运行次数）、`random_state`。
+
+### 注意
+
+- 簇数 $k$ 可以用肘部法（不同 $k$ 的惯性拐点）或轮廓系数辅助选择。
+- 假设簇近似球形且大小相近；细长形或不规则形状的簇应改用 DBSCAN。
+
+## DBSCAN
+
+### 原理
+
+基于**密度**的聚类，不需要指定簇数。两个参数：邻域半径 `eps` 和核心点阈值 `min_samples`。
+
+- **核心点**：`eps` 半径内邻居数 $\ge$ `min_samples` 的点；
+- **边界点**：不是核心点，但落在某核心点邻域内；
+- **噪声点**：两者都不是，标签为 `-1`。
+
+从任一未访问的核心点出发，把其邻域内的点连成一片，不断向邻域内的其他核心点扩张，最终形成一个密度连通的簇。簇可以是任意形状；密度不足的区域自然成为噪声。
+
+### 用法
+
+```python
+from py.clustering.dbscan import train_dbscan
+
+model, result = train_dbscan(X, eps=0.8, min_samples=5)
+print(result["labels"])          # -1 表示噪声点
+print(result["n_clusters"])      # 自动得到的簇数
+print(result["n_noise"])         # 噪声点数量
+```
+
+关键参数：`eps`（标准化空间中的邻域半径，因此标准化与模型绑定在 Pipeline 中）、`min_samples`（核心点的最小邻居数）。
+
+### 注意
+
+- `eps` 偏小会产生大量噪声点，偏大会把不同簇合并；可用 k-距离图（每个点到第 `min_samples` 近邻的距离排序后的拐点）辅助选取。
+- 对各簇密度差异大的数据效果差；结果对 `eps` 敏感，建议论文中做参数敏感性说明。
+
+## 选型对比
+
+| | KMeans | DBSCAN |
+| --- | --- | --- |
+| 是否指定簇数 | 需要 `n_clusters` | 不需要，由密度决定 |
+| 簇形状 | 近似球形 | 任意形状 |
+| 噪声处理 | 无噪声概念，全部强行归簇 | 显式输出噪声点 `-1` |
+| 敏感参数 | `k`、初始中心 | `eps`、`min_samples` |

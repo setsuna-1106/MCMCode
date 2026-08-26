@@ -77,7 +77,7 @@ MCMCode/
 │   ├── graph/                   # 图论和网络分析
 │   ├── forecasting/             # GM(1,1)、指数平滑和 ARIMA
 │   ├── classification/          # 分类模型
-│   ├── clustering/              # 聚类模型
+│   ├── [clustering/](docs/clustering.md)              # 聚类模型
 │   ├── dimensionality_reduction/ # PCA 降维模型
 │   ├── regression/              # 回归模型和任意函数拟合
 │   ├── optimization/            # 优化模型（SciPy、PuLP、OR-Tools）
@@ -124,8 +124,8 @@ MCMCode/
 | `py/classification/xgboost_classification.py` | 分类 | XGBoost 分类、评估和特征重要性 |
 | `py/classification/Logistics.py` | 分类 | 标准化 + Logistic 回归分类 |
 | `py/classification/rf_iris.py` | 分类 | 随机森林分类与特征重要性 |
-| `py/clustering/kmeans.py` | 聚类 | 标准化 + KMeans 聚类 |
-| `py/clustering/dbscan.py` | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
+| [`py/clustering/kmeans.py`](docs/clustering.md) | 聚类 | 标准化 + KMeans 聚类 |
+| [`py/clustering/dbscan.py`](docs/clustering.md) | 聚类 | 标准化 + DBSCAN 聚类与噪声识别 |
 | `py/regression/LinearRegression.py` | 回归 | 线性回归与常用回归指标 |
 | `py/regression/PolynomialRegression.py` | 回归 | 多项式回归与多项式特征 |
 | `py/regression/RidgeRegression.py` | 回归 | 带 L2 正则化的岭回归 |
