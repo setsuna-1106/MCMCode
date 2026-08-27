@@ -35,3 +35,7 @@ htmlcov/
 .env
 .env.*
 *.log
+
+# Agent
+.zcode
+.mimosa
