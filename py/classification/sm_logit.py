@@ -1,4 +1,4 @@
-"""statsmodels Logit classification template."""
+"""statsmodels Logit 二分类模板。"""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Common statsmodels hypothesis-test templates."""
+"""statsmodels 常用假设检验模板。"""
 
 from __future__ import annotations
 

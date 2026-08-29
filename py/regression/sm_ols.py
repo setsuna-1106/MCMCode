@@ -1,4 +1,4 @@
-"""statsmodels OLS regression template."""
+"""statsmodels OLS 回归模板。"""
 
 from __future__ import annotations
 

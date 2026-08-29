@@ -1,4 +1,4 @@
-"""statsmodels OLS diagnostic template."""
+"""statsmodels OLS 回归诊断模板。"""
 
 from __future__ import annotations
 

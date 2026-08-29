@@ -1,4 +1,4 @@
-"""Lightweight scipy curve_fit template."""
+"""scipy 任意函数拟合模板。"""
 
 import numpy as np
 from scipy.optimize import curve_fit

@@ -1,4 +1,4 @@
-"""statsmodels ARIMA forecasting template."""
+"""statsmodels ARIMA 预测模板。"""
 
 from __future__ import annotations
 

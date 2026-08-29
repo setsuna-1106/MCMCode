@@ -1,4 +1,4 @@
-"""岭回归模板 RidgeRegression """
+"""岭回归模板。"""
 
 import numpy as np
 from sklearn.linear_model import Ridge
