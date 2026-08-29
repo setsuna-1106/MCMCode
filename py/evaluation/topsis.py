@@ -38,3 +38,31 @@ def topsis(X, w, direction):
     order = np.argsort(-C)
 
     return C, order, D_plus, D_minus
+
+
+def main() -> None:
+    """默认使用 3 方案、2 指标的小数据集演示
+    实际使用时替换这一段数据。"""
+    # 第一列是成本型指标（越小越好），第二列是收益型指标（越大越好）。
+    X = np.array([
+        [10.0, 100.0],
+        [20.0, 80.0],
+        [30.0, 120.0],
+    ])
+    w = np.array([0.4, 0.6])
+    direction = np.array([-1, 1])
+
+    C, order, D_plus, D_minus = topsis(X, w, direction)
+
+    print("贴近度:", np.round(C, 8))
+    print("到正理想解的距离:", np.round(D_plus, 8))
+    print("到负理想解的距离:", np.round(D_minus, 8))
+    print("从优到劣的方案行号:", order)
+
+    # 本例的简单验收：替换题目后可删除或改写。
+    assert order[0] == 0
+    assert np.isclose(C[order[0]], C.max())
+
+
+if __name__ == "__main__":
+    main()

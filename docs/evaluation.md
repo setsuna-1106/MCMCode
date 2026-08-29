@@ -93,6 +93,7 @@ print("贴近度:", C, "从优到劣的行号:", order)
 
 - 入参 `w` 应已归一化；返回 `(C, order, D_plus, D_minus)`。
 - 权重可来自熵权法或 AHP，形成完整的组合评价流程。
+- 直接运行模板：`.venv/bin/python py/evaluation/topsis.py`
 
 ## 灰色关联度分析（gra.py）
 
