@@ -21,7 +21,8 @@ def topsis(X, w, direction):
     Xn = X / np.sqrt((X**2).sum(axis=0))
 
     # 成本型指标取倒数转为“越大越好”，再乘指标权重得到加权矩阵。
-    Xb = np.where(direction[:, None] < 0, 1.0 / np.maximum(Xn, 1e-12), Xn)
+    # direction 形状为 (指标数,)，直接广播即可按列选择，无需升维。
+    Xb = np.where(direction < 0, 1.0 / np.maximum(Xn, 1e-12), Xn)
     V = Xb * w
 
     # 正理想解取每列最大值，负理想解取每列最小值。
