@@ -1,3 +1,9 @@
+"""TOPSIS 模板：按与正、负理想解的距离对方案排序。
+
+数据约定：X 的每一行是一个方案，每一列是一个指标；
+w 为已归一化的权重，direction 中 1 表示收益型指标，-1 表示成本型指标。
+"""
+
 import numpy as np
 
 def topsis(X, w, direction):
