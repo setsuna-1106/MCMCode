@@ -57,6 +57,11 @@ python3 -m venv .venv
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
+.venv/bin/python py/visualization/plot_style.py
+.venv/bin/python py/visualization/heatmap_plots.py
+.venv/bin/python py/visualization/model_plots.py
+.venv/bin/python py/visualization/analysis_plots.py
+.venv/bin/python py/visualization/basic_plots.py
 ```
 
 其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
@@ -84,7 +89,8 @@ MCMCode/
 │   ├── [ode/](docs/ode.md)                     # 常微分方程数值求解
 │   ├── [interpolation/](docs/interpolation.md)           # 插值模型
 │   ├── [integration/](docs/integration.md)             # 数值积分计算
-│   └── [statistics/](docs/statistics.md)              # 统计假设检验
+│   ├── [statistics/](docs/statistics.md)              # 统计假设检验
+│   └── [visualization/](docs/visualization.md)        # 论文绘图
 ├── requirements.txt             # Python 依赖
 └── README.md
 ```
@@ -119,6 +125,11 @@ MCMCode/
 | [`py/regression/sm_diagnostics.py`](docs/regression.md) | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | [`py/classification/sm_logit.py`](docs/classification.md) | 统计建模 | Logit 二分类、优势比和分类评估 |
 | [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、卡方和单因素 ANOVA |
+| [`py/visualization/plot_style.py`](docs/visualization.md) | 绘图 | 统一论文绘图风格、中文字体和图片导出 |
+| [`py/visualization/heatmap_plots.py`](docs/visualization.md) | 绘图 | 相关系数与通用矩阵热力图 |
+| [`py/visualization/model_plots.py`](docs/visualization.md) | 绘图 | 回归、分类、聚类和 PCA 的模型诊断图 |
+| [`py/visualization/analysis_plots.py`](docs/visualization.md) | 绘图 | 灵敏度分析和时间序列预测图 |
+| [`py/visualization/basic_plots.py`](docs/visualization.md) | 绘图 | 折线、散点、柱状、箱线图等基础图 |
 | [`py/classification/knn.py`](docs/classification.md) | 分类 | 标准化 + KNN 分类 |
 | [`py/classification/svm.py`](docs/classification.md) | 分类 | 标准化 + SVM 分类 |
 | [`py/classification/xgboost_classification.py`](docs/classification.md) | 分类 | XGBoost 分类、评估和特征重要性 |
@@ -752,6 +763,8 @@ print(one_way_anova(df, target="yield", group="plan"))
 - pandas 2.x
 - scikit-learn 1.5+
 - statsmodels 0.14+
+- matplotlib 3.8+
+- seaborn 0.13+
 - XGBoost 2.1+
 - PuLP 2.9+
 - OR-Tools 9.15+
