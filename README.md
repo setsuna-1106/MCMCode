@@ -71,10 +71,12 @@ python3 -m venv .venv
 .venv/bin/python py/visualization/basic_plots.py
 ```
 
-其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；运行 `data_clean.py` 前，需要在项目根目录放置名为 `附件.csv` 的输入文件：
+其中机器学习示例默认使用 sklearn 自带的 Iris 数据集；预处理模板使用自包含的合成数据演示，实际使用时替换为 `pd.read_csv` / `pd.read_excel` 读入的数据：
 
 ```bash
 .venv/bin/python py/preprocessing/data_clean.py
+.venv/bin/python py/preprocessing/outlier_detection.py
+.venv/bin/python py/preprocessing/encode_categorical.py
 ```
 
 ## 项目结构
@@ -109,7 +111,9 @@ MCMCode/
 
 | 文件 | 类型 | 主要用途 |
 | --- | --- | --- |
-| [`py/preprocessing/data_clean.py`](docs/preprocessing.md) | 数据处理 | 读取根目录 `附件.csv`，用各数值列的中位数填充缺失值 |
+| [`py/preprocessing/data_clean.py`](docs/preprocessing.md) | 数据处理 | 缺失值报告、数值列中位数填充和去重 |
+| [`py/preprocessing/outlier_detection.py`](docs/preprocessing.md) | 数据处理 | IQR 与 3σ 异常值检测及盖帽处理 |
+| [`py/preprocessing/encode_categorical.py`](docs/preprocessing.md) | 数据处理 | one-hot 哑变量编码与标签编码 |
 | [`py/evaluation/entropy_weight.py`](docs/evaluation.md) | 评价方法 | 极差标准化后计算熵权 |
 | [`py/evaluation/topsis.py`](docs/evaluation.md) | 评价方法 | 根据权重和指标方向计算 TOPSIS 贴近度并排序 |
 | [`py/forecasting/gm11.py`](docs/forecasting.md) | 预测 | 使用 GM(1,1) 对非负时间序列进行短期预测 |
@@ -184,7 +188,20 @@ df = pd.read_csv("附件.csv")
 df = handle_missing(df)
 ```
 
-`handle_missing` 只处理数值列；文本列、分类列和日期列需要根据题意单独处理。
+`handle_missing` 只处理数值列；文本列、分类列和日期列需要根据题意单独处理。配套的 `missing_report` 报告各列缺失比例，`drop_duplicates` 在划分数据前去除重复行。异常值检测与分类编码：
+
+```python
+from py.preprocessing.encode_categorical import one_hot_encode
+from py.preprocessing.outlier_detection import (
+    cap_outliers,
+    detect_outliers_iqr,
+)
+
+iqr = detect_outliers_iqr(df)            # IQR 法检测，返回掩码与边界
+df = cap_outliers(df, iqr)               # 盖帽到边界（或 df.mask(iqr["mask"]) 置 NaN）
+
+encoded, info = one_hot_encode(df, drop_first=True)   # 分类列转哑变量
+```
 
 ### 灵敏度分析
 
