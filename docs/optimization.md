@@ -9,6 +9,7 @@ $$\max / \min \; c^\top x \quad \text{s.t.} \quad A_{ub} x \le b_{ub}, \quad A_{
 | SciPy | linprog / minimize | 纯连续问题，接口最直接 |
 | PuLP | lp / milp | 代数建模，整数与 0-1 变量，默认可直接写 max |
 | OR-Tools | lp / milp / cp_sat / assignment / min_cost_flow / routing | 大规模或专用结构：排程、指派、运输网络、路径规划 |
+| 元启发式 | sa / ga / pso | 黑箱、不可导、强非凸或组合爆炸问题 |
 
 ## scipy 线性规划（scipy_linprog.py）
 
@@ -233,9 +234,46 @@ print(route, distance)   # 首尾都是 depot
 
 距离矩阵须为非负**整数**（小数先放大取整）；多车辆、容量、时间窗在此基础上增加对应维度。
 
+## 元启发式优化（sa.py / ga.py / pso.py）
+
+### 原理
+
+前面的求解器都依赖问题结构：LP/MILP 要求线性、`minimize` 要求目标可导且只保证局部最优。当目标是**仿真结果、查表规则**等黑箱（不可导），或景观**强非凸、坑坑洼洼**，或解空间是**排列组合**时，用元启发式兜底：把优化问题抽象为「给一个候选解、返回一个好坏分数」，在有界空间内随机搜索，通过**有策略地接受劣解**跳出局部最优，在有限预算内给出足够好的解——但不保证最优。
+
+三个模板共用同一套约定：`objective(x) -> 标量`（黑箱函数）、`bounds` 给出有界搜索空间、`maximize` 切换方向、`random_state` 固定种子保证可复现；返回字典统一为 `x_best`（最优解）、`fun_best`（原始目标值）、`history`（逐步/逐代最优值序列）、`n_evaluations`（目标评价次数）。
+
+| 模板 | 搜索方式 | 跳出局部最优的机制 | 适用 |
+| --- | --- | --- | --- |
+| SA 模拟退火 | 单点迭代 + 邻域扰动 | Metropolis 准则：以 $\exp(-\Delta E/T)$ 概率接受劣解，温度几何降温 | 实现最简；连续离散通用 |
+| GA 遗传算法 | 种群进化 | 变异维持多样性 + 交叉重组；锦标赛选择 + 精英保留 | 离散/组合问题（改写编码与交叉变异即可） |
+| PSO 粒子群 | 群体协作 | 粒子同时拉向个体历史最佳 pbest 与全群最佳 gbest，多点并行 | 连续问题，收敛通常最快 |
+
+### 用法
+
+```python
+from py.optimization.pso import particle_swarm
+
+def objective(x):
+    return (x[0] - 2.0) ** 2 + (x[1] + 1.0) ** 2   # 任意黑箱函数
+
+result = particle_swarm(objective, [(-10.0, 10.0), (-10.0, 10.0)],
+                        n_particles=30, iterations=100)
+print(result["x_best"], result["fun_best"])
+```
+
+`simulated_annealing` / `genetic_algorithm` 接口相同；收敛过程用 `result["history"]` 记录，可直接交给[可视化模块](visualization.md)的 `plot_line` 画收敛曲线。
+
+### 注意
+
+- **没有最优性证明**：论文中应说明为启发式解，用多个随机种子独立运行，报告最好/最差/均值以证明稳定；
+- 结果随机，固定 `random_state` 保证复现；参数（温度、种群、惯性等）敏感，建议附收敛曲线；
+- GA 处理组合问题（排列、0-1）时替换编码与交叉/变异算子，进化框架不变；
+- 能用精确求解器就用精确的——有最优性证明，评审更认可。
+
 ## 选型建议
 
 - 连续线性/非线性小问题：SciPy 两个模板最省事。
 - 有整数或 0-1 变量的通用问题：PuLP（建模直观、默认最大化）或 OR-Tools（性能更强）。
 - 排班调度、复杂逻辑约束：CP-SAT；矩阵指派：`ortools_assignment`；运输网络：最小费用流；TSP/VRP：`ortools_routing`。
+- 目标黑箱、不可导或强非凸：元启发式——连续优先 PSO，离散/组合改 GA 编码，快速实现用 SA。
 - 所有模板都应在论文中检查求解状态（Optimal / FEASIBLE）并做约束余量或灵敏度分析（见[评估模块](evaluation.md)）。

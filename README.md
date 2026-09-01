@@ -41,6 +41,9 @@ python3 -m venv .venv
 .venv/bin/python py/optimization/ortools_assignment.py
 .venv/bin/python py/optimization/ortools_min_cost_flow.py
 .venv/bin/python py/optimization/ortools_routing.py
+.venv/bin/python py/optimization/sa.py
+.venv/bin/python py/optimization/ga.py
+.venv/bin/python py/optimization/pso.py
 .venv/bin/python py/evaluation/sensitivity.py
 .venv/bin/python py/evaluation/ahp.py
 .venv/bin/python py/evaluation/gra.py
@@ -152,6 +155,9 @@ MCMCode/
 | [`py/optimization/ortools_assignment.py`](docs/optimization.md) | 优化 | OR-Tools CP-SAT 指派问题 |
 | [`py/optimization/ortools_min_cost_flow.py`](docs/optimization.md) | 优化 | OR-Tools 最小费用流和运输网络 |
 | [`py/optimization/ortools_routing.py`](docs/optimization.md) | 优化 | OR-Tools RoutingModel 单车辆 TSP |
+| [`py/optimization/sa.py`](docs/optimization.md) | 优化 | 模拟退火：黑箱目标的单点随机搜索和退火接受 |
+| [`py/optimization/ga.py`](docs/optimization.md) | 优化 | 实数编码遗传算法：选择、交叉、变异和精英保留 |
+| [`py/optimization/pso.py`](docs/optimization.md) | 优化 | 粒子群：惯性、个体认知和社会认知的速度更新 |
 | [`py/ode/scipy_solve_ivp.py`](docs/ode.md) | 微分方程 | scipy 常微分方程数值积分和事件检测 |
 | [`py/interpolation/scipy_interpolate.py`](docs/interpolation.md) | 插值 | scipy 线性、三次样条和 PCHIP 插值 |
 | [`py/integration/scipy_integrate.py`](docs/integration.md) | 数值积分 | scipy 一维定积分、误差估计和反常积分 |
