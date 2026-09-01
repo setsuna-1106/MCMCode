@@ -60,6 +60,10 @@ python3 -m venv .venv
 .venv/bin/python py/regression/sm_ols.py
 .venv/bin/python py/classification/sm_logit.py
 .venv/bin/python py/statistics/sm_tests.py
+.venv/bin/python py/statistics/normality_tests.py
+.venv/bin/python py/statistics/nonparametric_tests.py
+.venv/bin/python py/statistics/correlation_tests.py
+.venv/bin/python py/statistics/bootstrap_interval.py
 .venv/bin/python py/visualization/plot_style.py
 .venv/bin/python py/visualization/heatmap_plots.py
 .venv/bin/python py/visualization/model_plots.py
@@ -127,7 +131,11 @@ MCMCode/
 | [`py/regression/sm_ols.py`](docs/regression.md) | 统计建模 | OLS 回归、测试集指标和回归诊断 |
 | [`py/regression/sm_diagnostics.py`](docs/regression.md) | 回归诊断 | 残差正态性、异方差、自相关和 VIF |
 | [`py/classification/sm_logit.py`](docs/classification.md) | 统计建模 | Logit 二分类、优势比和分类评估 |
-| [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、卡方和单因素 ANOVA |
+| [`py/statistics/sm_tests.py`](docs/statistics.md) | 统计检验 | Welch t、配对 t、卡方、Fisher、单因素 ANOVA、Levene 和 Tukey HSD |
+| [`py/statistics/normality_tests.py`](docs/statistics.md) | 统计检验 | Shapiro-Wilk、Jarque-Bera 和 Lilliefors 正态性检验 |
+| [`py/statistics/nonparametric_tests.py`](docs/statistics.md) | 统计检验 | Mann-Whitney U、Kruskal-Wallis 和 Wilcoxon 符号秩 |
+| [`py/statistics/correlation_tests.py`](docs/statistics.md) | 统计检验 | Pearson 和 Spearman 相关分析 |
+| [`py/statistics/bootstrap_interval.py`](docs/statistics.md) | 统计检验 | 任意统计量的非参数 Bootstrap 置信区间 |
 | [`py/visualization/plot_style.py`](docs/visualization.md) | 绘图 | 统一论文绘图风格、中文字体和图片导出 |
 | [`py/visualization/heatmap_plots.py`](docs/visualization.md) | 绘图 | 相关系数与通用矩阵热力图 |
 | [`py/visualization/model_plots.py`](docs/visualization.md) | 绘图 | 回归、分类、聚类和 PCA 的模型诊断图 |
